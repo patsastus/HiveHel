@@ -1,41 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   test_chars.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/24 10:04:19 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/08 16:48:14 by nraatika         ###   ########.fr       */
+/*   Created: 2025/05/05 09:37:12 by nraatika          #+#    #+#             */
+/*   Updated: 2025/05/08 12:26:08 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libftprintf.h"
 
-int	ft_printf(const char *s, ...)
+#include "tests.h"
+
+void	test_chars(void)
 {
-	va_list	ap;
-	long	count;
-	int		temp;
-
-	va_start(ap, s);
-	count = 0;
-	while (*s)
+	const char	*tests[5] = {"|%c|\n", "|%2c|\n", "|%-2c|\n", "|%4c|\n", "|%-4c|\n"};
+	int			i;
+	int			cl;
+	int			ft;
+	
+	ft_printf("\nTesting char with different widths and '-' flag\n");
+	i = 0;
+	while (i < 5)
 	{
-		if (*s != '%')
-			count += write(1, s, 1);
-		else
-		{
-			temp = ft_convert(s, &ap);
-			if (temp != -1)
-			{
-				count += temp;
-				s++;
-			}
-			else
-				return (-1);
-		}
-		s++;
+		cl = printf(tests[i], 'f');
+		ft = ft_printf(tests[i], 'f');
+		printf("Returns; %d | %d\n", cl, ft);
+		i++;
 	}
-	va_end(ap);
-	return (count);
 }

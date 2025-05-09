@@ -1,15 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_printf_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/24 10:04:19 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/08 16:48:14 by nraatika         ###   ########.fr       */
+/*   Created: 2025/05/01 14:09:20 by nraatika          #+#    #+#             */
+/*   Updated: 2025/05/08 12:45:45 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libftprintf.h"
+#include "libftprintf_bonus.h"
 
 int	ft_printf(const char *s, ...)
 {
@@ -25,11 +25,10 @@ int	ft_printf(const char *s, ...)
 			count += write(1, s, 1);
 		else
 		{
-			temp = ft_convert(s, &ap);
-			if (temp != -1)
+			temp = ft_convert_bonus(&s, &ap);
+			if (temp >= 0)
 			{
 				count += temp;
-				s++;
 			}
 			else
 				return (-1);

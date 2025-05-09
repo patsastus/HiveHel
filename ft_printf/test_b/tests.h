@@ -1,41 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   tests.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/24 10:04:19 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/08 16:48:14 by nraatika         ###   ########.fr       */
+/*   Created: 2025/05/07 16:36:34 by nraatika          #+#    #+#             */
+/*   Updated: 2025/05/08 12:21:12 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libftprintf.h"
+#include "../libft/libft.h"
+#include "../bonus/libftprintf_bonus.h"
+#include <stdio.h>
+#include <math.h>
+#include <limits.h>
 
-int	ft_printf(const char *s, ...)
-{
-	va_list	ap;
-	long	count;
-	int		temp;
-
-	va_start(ap, s);
-	count = 0;
-	while (*s)
-	{
-		if (*s != '%')
-			count += write(1, s, 1);
-		else
-		{
-			temp = ft_convert(s, &ap);
-			if (temp != -1)
-			{
-				count += temp;
-				s++;
-			}
-			else
-				return (-1);
-		}
-		s++;
-	}
-	va_end(ap);
-	return (count);
-}
+void	test_chars(void);
+void	test_strs(void);              
+void	test_ptrs(void);
+void	test_ints(void); 
+void	test_uints(void);
+void	test_hexes(void);

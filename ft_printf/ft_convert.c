@@ -6,10 +6,12 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 13:30:06 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/06 09:28:57 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/05/09 10:51:49 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libftprintf.h"
+
+static int	handle_flags(t_flag *flags, va_list *ap);
 
 /*
 read string for characters that are legal conversion standards
@@ -21,7 +23,16 @@ int	ft_convert(const char *s, va_list *ap)
 
 	flags = make_flags(s);
 	if (!flags)
-		return (0);
+		return (-1);
+	count = handle_flags(flags, ap);
+	free(flags);
+	return (count);
+}
+
+static int	handle_flags(t_flag *flags, va_list *ap)
+{
+	int	count;
+
 	count = 0;
 	if (flags->conv == CHAR)
 		count = write_char((char)va_arg(*ap, int));
@@ -39,6 +50,7 @@ int	ft_convert(const char *s, va_list *ap)
 		count = write_hex(va_arg(*ap, int), 1);
 	if (flags->conv == PER)
 		count = (write(1, "%", 1));
-	free(flags);
+	if (flags->conv == ERR)
+		count = -1;
 	return (count);
 }
