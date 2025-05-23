@@ -1,15 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 12:26:19 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/19 15:08:57 by nraatika         ###   ########.fr       */
+/*   Created: 2025/05/19 12:56:34 by nraatika          #+#    #+#             */
+/*   Updated: 2025/05/19 17:05:54 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 /*	
 *	returns the index of the first newline found starting at index start, or 
@@ -64,4 +64,11 @@ ssize_t	ft_strlen(char *s)
 	while (s[i])
 		i++;
 	return (i);
+}
+
+void	init_struct(t_data *d)
+{
+	d->start = 0;
+	d->eof = BUFFER_SIZE;
+	d->used = 1;
 }

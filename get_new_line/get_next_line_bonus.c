@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/09 12:26:14 by nraatika          #+#    #+#             */
-/*   Updated: 2025/05/23 09:52:59 by nraatika         ###   ########.fr       */
+/*   Created: 2025/05/19 12:55:27 by nraatika          #+#    #+#             */
+/*   Updated: 2025/05/19 17:08:18 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*get_next_line(int fd)
 {
 	char			*ret;
-	static t_data	d = {.start = BUFFER_SIZE, .eof = BUFFER_SIZE};
-	ssize_t			tmp;
+	static t_data	files[FLIST_SIZE];
+	long			tmp;
 
 	ret = NULL;
-	tmp = check_update_buffer(&d, &ret);
+	if (fd >= FLIST_SIZE || fd < 0)
+		return (NULL);
+	tmp = check_update_buffer(&(files[fd]), &ret);
 	if (tmp >= 0)
 	{
-		if (d.eof >= tmp)
+		if ((files[fd]).eof >= tmp)
 			return (ret);
-		if (d.eof <= d.start)
-			return (NULL);
+		if ((files[fd]).eof <= (files[fd]).start)
+			return (free(ret), NULL);
 	}
 	if (tmp == -1)
-		tmp = read_until_line(&d, &ret, fd);
-	if (d.eof == -1 && ft_strlen(ret) == 0)
+		tmp = read_until_line(&(files[fd]), &ret, fd);
+	if ((files[fd]).eof == -1 && ft_strlen(ret) == 0)
 	{
 		free(ret);
 		return (NULL);
@@ -36,7 +38,7 @@ char	*get_next_line(int fd)
 	return (ret);
 }
 
-long	read_until_line(t_data *d, char **s, int fd)
+ssize_t	read_until_line(t_data *d, char **s, int fd)
 {
 	ssize_t	rd;
 	ssize_t	in;
@@ -79,6 +81,8 @@ ssize_t	check_update_buffer(t_data *d, char **s)
 	char	*temp;
 	char	*new;
 
+	if (!(d->used))
+		init_struct(d);
 	if (d->eof < d->start)
 		return (0);
 	if (d->start == BUFFER_SIZE)
