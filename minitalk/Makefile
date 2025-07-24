@@ -6,7 +6,7 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 13:51:50 by nraatika          #+#    #+#              #
-#    Updated: 2025/07/15 13:00:19 by nraatika         ###   ########.fr        #
+#    Updated: 2025/07/23 13:39:16 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ BONUS_DIR	:= bonus_objs
 INC_DIR		:= include
 
 SRCS_C		:=	client.c
-SRCS_S		:=	server.c utils.c
+SRCS_S		:=	server.c
 HEADER		:=	minitalk.h
 
 OBJS_C		:= $(addprefix $(OBJ_DIR)/, $(SRCS_C:.c=.o))
@@ -29,23 +29,22 @@ OBJS_S		:= $(addprefix $(OBJ_DIR)/, $(SRCS_S:.c=.o))
 CLIENT_B		:= $(BONUS_DIR)/client
 SERVER_B		:= $(BONUS_DIR)/server
 
-SRCS_C_BONUS	:=	client_bonus.c utils_bonus.c
-SRCS_S_BONUS	:=	server_bonus.c utils_bonus.c
-HEADER_BONUS	:=	minitalk_bonus.h
+SRCS_C_BONUS	:=	client_bonus.c
+SRCS_S_BONUS	:=	server_bonus.c
 
 OBJS_C_BONUS	:= $(addprefix $(BONUS_DIR)/, $(SRCS_C_BONUS:.c=.o))
 OBJS_S_BONUS	:= $(addprefix $(BONUS_DIR)/, $(SRCS_S_BONUS:.c=.o))
 
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror -g
-SLEEP_TIME	:= 150
-ifeq	($(origin sleep), undefined)
-	SLEEP_TIME_VALUE = $(SLEEP_TIME)
+BUFFER_SIZE	:= 1000000
+ifeq	($(origin buffer), undefined)
+	BUFFER_SIZE_VALUE = $(BUFFER_SIZE)
 else
-	SLEEP_TIME_VALUE = $(sleep)
+	BUFFER_SIZE_VALUE = $(buffer)
 endif
-SLEEP_ID	:= .sleep_$(SLEEP_TIME_VALUE)
-CFLAGS		+= -DSLEEP_TIME=$(SLEEP_TIME_VALUE)
+BUFFER_ID	:= .buffer_$(BUFFER_SIZE_VALUE)
+CFLAGS		+= -DBUFFER_SIZE=$(BUFFER_SIZE_VALUE)
 
 RM			:= rm -f
 
@@ -75,10 +74,10 @@ $(LIBFT):
 $(OBJ_DIR):
 		mkdir -p $(OBJ_DIR)
 
-$(CLIENT_B):		$(OBJS_C_BONUS) $(INC_DIR)/$(HEADER_BONUS) $(LIBFT)
+$(CLIENT_B):		$(OBJS_C_BONUS) $(INC_DIR)/$(HEADER) $(LIBFT)
 		$(CC) $(CFLAGS) $(INC) $(OBJS_C_BONUS) $(LIBS) -o $(CLIENT_B)
 
-$(SERVER_B):		$(OBJS_S_BONUS) $(INC_DIR)/$(HEADER_BONUS) $(LIBFT)
+$(SERVER_B):		$(OBJS_S_BONUS) $(INC_DIR)/$(HEADER) $(LIBFT)
 		$(CC) $(CFLAGS) $(INC) $(OBJS_S_BONUS) $(LIBS) -o $(SERVER_B)
 
 
@@ -88,9 +87,9 @@ $(BONUS_DIR)/%.o:	$(SRC_DIR)/%.c $(INC_DIR)/$(HEADER) $(LIBFT) | $(BONUS_DIR)
 $(BONUS_DIR):
 		mkdir -p $(BONUS_DIR)
 
-$(SLEEP_ID):
-		@rm -f .sleep_*
-		@echo $(SLEEP_TIME_VALUE) > $@
+$(BUFFER_ID):
+		@rm -f .buffer_*
+		@echo $(BUFFER_SIZE_VALUE) > $@
 
 all:			$(NAME)
 
@@ -102,7 +101,7 @@ clean:
 		$(MAKE) -C $(LIBFT_DIR) clean
                                          
 fclean:			clean 
-		$(RM) $(CLIENT) $(SERVER) $(BONUS) $(SLEEP_ID)
+		$(RM) $(CLIENT) $(SERVER) $(BONUS) $(BUFFER_ID)
 		$(MAKE) -C $(LIBFT_DIR) fclean
 
 re:				fclean all               

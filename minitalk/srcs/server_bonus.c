@@ -6,60 +6,61 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 14:03:52 by nraatika          #+#    #+#             */
-/*   Updated: 2025/07/04 14:40:56 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:25:26 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minitalk_bonus.h>
+#include <minitalk.h>
 #include <libft.h>
 
-volatile sig_atomic_t	g_server;
+volatile sig_atomic_t	g_handler_flag;
 
-int	main(void)
+static void	append(char c)
 {
-	struct sigaction	act;
+	static char		text[BUFFER_SIZE];
+	static size_t	index = 0;
 
-	g_server = 0;
-	act.sa_sigaction = signal_handler_server;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = SA_RESTART | SA_SIGINFO;
-	sigaction(SIGUSR1, &act, NULL);
-	sigaction(SIGUSR2, &act, NULL);
-	sigaction(SIGINT, &act, NULL);
-	print_pid();
-	while (1)
-		pause();
-}
-
-void	signal_handler_server(int signum, siginfo_t *info, void *context)
-{
-	static unsigned char	vars[3] = {0, 0, 1};
-	static char				*text = NULL;
-
-	(void)context;
-	if (!g_server)
+	text[index++] = c;
+	if (c == '\0' || index == BUFFER_SIZE)
 	{
-		g_server = 1;
-		if (!text)
-			text = ft_strdup("");
-		if (!text || signum == SIGINT)
-			free_and_exit((void *)text, SIGINT);
-		if (signum == SIGUSR1 || signum == SIGUSR2)
-		{
-			vars[0]++;
-			if (signum == SIGUSR2)
-				vars[1] += vars[2];
-			vars[2] *= 2;
-			if (kill(info->si_pid, signum) == -1)
-				write(2, "Couldn't ACK\n", 13);
-		}
-		if (vars[0] == 8)
-			append(&text, vars);
-		g_server = 0;
+		if (c == '\0')
+			--index;
+		write(1, text, index);
+		if (c == '\0')
+			write(1, "\n", 1);
+		index = 0;
 	}
 }
 
-void	print_pid(void)
+static void	signal_handler(int signum, siginfo_t *info, void *context)
+{
+	static char	character = 0;
+	static int	index = 0;
+
+	(void)context;
+	if (g_handler_flag)
+	{
+		write(2, "handler collision\n", 17);
+		return ;
+	}
+	g_handler_flag = 1;
+	if (signum == SIGUSR2)
+		character = character | (1 << index);
+	index++;
+	if (index == 8)
+	{
+		append(character);
+		if (character == '\0')
+			kill(info->si_pid, SIGUSR2);
+		character = 0;
+		index = 0;
+	}
+	g_handler_flag = 0;
+	if (kill(info->si_pid, SIGUSR1) == -1)
+		write(2, "ack error\n", 10);
+}
+
+static void	print_pid(void)
 {
 	pid_t	pid;
 	char	*str;
@@ -72,4 +73,21 @@ void	print_pid(void)
 		write(1, "\n", 1);
 		free(str);
 	}
+}
+
+int	main(void)
+{
+	struct sigaction	act;
+
+	g_handler_flag = 0;
+	act.sa_sigaction = signal_handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = SA_NODEFER | SA_SIGINFO;
+	if (sigaction(SIGUSR1, &act, NULL) == -1)
+		exit(1);
+	if (sigaction(SIGUSR2, &act, NULL) == -1)
+		exit(1);
+	print_pid();
+	while (1)
+		pause();
 }
