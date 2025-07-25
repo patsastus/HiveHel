@@ -6,7 +6,7 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/16 11:45:38 by nraatika          #+#    #+#              #
-#    Updated: 2025/07/25 14:59:24 by nraatika         ###   ########.fr        #
+#    Updated: 2025/07/25 17:23:01 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 NAME		:=libft.a
@@ -35,7 +35,7 @@ SRCS		+=make_flags.c	ft_convert.c	ft_printf.c		write_char.c\
 			write_hex.c		padding.c		ft_itoa_hex.c	ft_utoa.c
 
 #get_next_line
-
+SRCS		+=get_next_line.c	get_next_line_utils.c
 
 HEADER		:=libft.h
 INC			:= -I./$(INC_DIR) 

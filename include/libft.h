@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 09:33:20 by nraatika          #+#    #+#             */
-/*   Updated: 2025/07/25 11:47:53 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/07/25 17:31:16 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef LIBFT_H
@@ -16,6 +16,10 @@
 # include <stdlib.h>
 # include <stddef.h>
 # include <unistd.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 16
+# endif
 
 typedef struct s_list
 {
@@ -50,6 +54,19 @@ typedef struct s_printf_flag
 	int					width;
 	int					read;
 }	t_printf_flag;
+
+/*	get_next_line
+	buf 	contains the data, 
+	index 	where to start reading (some data may have been used already)
+	eof		index where eof was found when filling buffer, 
+			or BUFFER_SIZE if fully filled
+*/
+typedef struct s_data_gnl
+{
+	char	buf[BUFFER_SIZE];
+	ssize_t	start;
+	ssize_t	eof;
+}	t_data_gnl;
 
 //libft
 int				ft_isalpha(int c);
@@ -87,6 +104,7 @@ void			ft_putchar_fd(char c, int fd);
 void			ft_putstr_fd(char *s, int fd);
 void			ft_putendl_fd(char *s, int fd);
 void			ft_putnbr_fd(int n, int fd);
+
 //bonus
 t_list			*ft_lstnew(void *content);
 void			ft_lstadd_front(t_list **lst, t_list *new);
@@ -119,5 +137,10 @@ char			*pad_c(char c, t_printf_flag *flags);
 char			*pad_s(char *s, t_printf_flag *flags, int len);
 char			*pad_zero(char *s, int n);
 void			pad_sign(char **s, char c);
+
+//get_next_line
+char			*get_next_line(int fd);
+ssize_t			i_of_newline(char *s, ssize_t start, ssize_t buf);
+char			*ft_strjoin_gnl(char *one, char *two, ssize_t len);
 
 #endif

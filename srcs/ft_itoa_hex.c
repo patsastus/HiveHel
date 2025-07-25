@@ -6,11 +6,11 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 16:36:11 by nraatika          #+#    #+#             */
-/*   Updated: 2025/07/25 15:01:11 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/07/25 17:33:38 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <libft.h>
- 
+
 static char	*make_str(unsigned long u, int *num_chars);
 static void	ft_write_str(char *dest, unsigned long u, int num_chars);
 
