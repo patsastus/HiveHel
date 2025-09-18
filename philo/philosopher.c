@@ -6,13 +6,13 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:58:41 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/12 14:43:13 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/09/18 12:04:42 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-t_philo	*init_philosopher(unsigned int id, unsigned long start_time, \
+t_philo	*init_philosopher(unsigned int id, unsigned long start, \
 t_table *table)
 {
 	t_philo	*philo;
@@ -22,8 +22,8 @@ t_table *table)
 		return (NULL);
 	memset(philo, 0, sizeof(t_philo));
 	philo->id = id;
-	philo->start = start_time;
-	philo->last_meal_time = start_time;
+	philo->start = start;
+	philo->last_meal = start;
 	philo->write_mutex = &(table->write_mutex);
 	pthread_mutex_init(&(philo->own_fork), NULL);
 	pthread_mutex_init(&(philo->monitor_mutex), NULL);
@@ -36,9 +36,11 @@ t_table *table)
 
 void	take_forks(t_philo *philo)
 {
-	const char		*msg = "%u %d has taken fork %d\n";
+	unsigned long	time;
 	pthread_mutex_t	*temp;
 
+	if (philo->dead)
+		return ;
 	if (philo->id % 2)
 		temp = &(philo->own_fork);
 	else
@@ -48,53 +50,66 @@ void	take_forks(t_philo *philo)
 	pthread_mutex_lock(temp);
 	if (philo->id % 2)
 		temp = philo->other_fork;
- 	else
+	else
 		temp = &(philo->own_fork);
 	pthread_mutex_lock(temp);
+	pthread_mutex_lock(&(philo->monitor_mutex));
+	philo->holding = 1;
+	pthread_mutex_unlock(&(philo->monitor_mutex));
 	pthread_mutex_lock(philo->write_mutex);
-	if (philo->id % 2)
-		printf(msg, (gettime_in_ms() - philo->start), philo->id, philo->id - 1);
-	printf(msg, (gettime_in_ms() - philo->start), philo->id, philo->id);
-	if (!(philo->id % 2))
-		printf(msg, (gettime_in_ms() - philo->start), philo->id, philo->id - 1);
+	printf("%u holding\n", philo->id);
 	pthread_mutex_unlock(philo->write_mutex);
+	time = gettime_in_ms();
+	if (time == ULONG_MAX)
+		return ;
+	write_message('f', philo, time);
 }
 
 void	release_forks(t_philo *philo, int silent)
 {
-	const char	*msg = "%u %d has released forks\n";
+	unsigned long	time;
 
+	if (philo->dead)
+		silent = 1;
+	time = gettime_in_ms();
 	pthread_mutex_unlock(&(philo->own_fork));
 	pthread_mutex_unlock(philo->other_fork);
+	pthread_mutex_lock(&(philo->monitor_mutex));
+	philo->holding = 0;
+	pthread_mutex_unlock(&(philo->monitor_mutex));
+	pthread_mutex_lock(philo->write_mutex);
+	printf("%u releasing\n", philo->id);
+	pthread_mutex_unlock(philo->write_mutex);
 	if (!silent)
-	{
-		pthread_mutex_lock(philo->write_mutex);
-		printf(msg, (gettime_in_ms() - philo->start), philo->id);
-		pthread_mutex_unlock(philo->write_mutex);
-	}
+		write_message('r', philo, time);
 }
 
 void	*loop_philo(void *input)
 {
 	t_philo	*philo;
+	int		i;
 
+	i = 0;
 	philo = input;
 	if (philo->id % 2)
 		usleep(BLINK);
-	pthread_mutex_lock(&(philo->monitor_mutex));
 	while (!philo->dead && philo->meals_eaten < philo->meals_goal)
 	{
-		pthread_mutex_unlock(&(philo->monitor_mutex));
-		usleep(BLINK);
 		thinking(philo);
 		if (philo->other_fork)
 		{
 			eating(philo);
-			if (!philo->dead)
-				sleeping(philo);
+			sleeping(philo);
 		}
-		pthread_mutex_lock(&(philo->monitor_mutex));
+		usleep(BLINK);
 	}
+	pthread_mutex_lock(&(philo->monitor_mutex));
+	if (philo->holding)
+	{
+		pthread_mutex_unlock(&(philo->monitor_mutex));
+		release_forks(philo, 0);
+	}
+	else
 		pthread_mutex_unlock(&(philo->monitor_mutex));
 	return (NULL);
 }

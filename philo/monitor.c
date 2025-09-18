@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 11:13:40 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/12 14:02:24 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/09/18 10:54:07 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,31 +34,44 @@ table->philos[i]->current_action != 'e')
 		return (0);
 }
 
+static int	should_philo_die(t_table *table, int i, unsigned long time)
+{
+	pthread_mutex_lock(&(table->philos[i]->monitor_mutex));
+	if (time - table->philos[i]->last_meal > table->time_to_die)
+	{
+		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
+		dying(table->philos[i], 0);
+		table->someone_died = (char)(i + 1);
+		return (1);
+	}
+	else
+	{
+		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
+		return (0);
+	}
+}
+
 void	*monitor(void *input)
 {
 	t_table			*table;
 	unsigned int	i;
+	unsigned long	time;
+	unsigned int	loop;
 
+	loop = 0;
 	table = input;
-	while (1)
+	while (!table->someone_died)
 	{
 		i = 0;
-		while (i < table->count)
+		time = gettime_in_ms();
+		while (i < table->count && time != ULONG_MAX)
 		{
-			pthread_mutex_lock(&(table->philos[i]->monitor_mutex));
-			if (gettime_in_ms() - table->philos[i]->last_meal_time > table->\
-time_to_die)
-			{
-				pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
-				dying(table->philos[i]);
-				table->someone_died = (char)(i + 1);
-				return (NULL);
-			}
-			pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
+			should_philo_die(table, i, time);
 			++i;
 		}
 		if (all_eaten(table))
 			return (NULL);
 		usleep(MS);
 	}
+	return (NULL);
 }

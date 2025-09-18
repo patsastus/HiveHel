@@ -6,7 +6,7 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/09 09:57:26 by nraatika          #+#    #+#              #
-#    Updated: 2025/09/09 13:02:24 by nraatika         ###   ########.fr        #
+#    Updated: 2025/09/18 12:23:24 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ OBJ_DIR		:= objs
 INC_DIR		:= philo
 
 ## Files
-SRCS		:=	main.c philosopher.c parsing.c utils.c
+SRCS		:=	main.c parsing.c philosopher.c actions.c monitor.c utils.c
 HEADER		:=	philosophers.h
 
 OBJS		:= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
@@ -28,6 +28,7 @@ HEADERS		:= $(addprefix $(INC_DIR)/, $(HEADER))
 ## Compiler config
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror -g
+CFLAGS		+= -O0
 RM			:= rm -f
 
 INC			:= -I$(INC_DIR)

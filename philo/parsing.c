@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 10:53:27 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/10 15:37:54 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/09/17 15:59:41 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static t_table	*parse_input(int argc, char **argv, char *flag)
 	if (argc == 6)
 		table->required_meals = params[4];
 	else
-		table->required_meals = -1;
+		table->required_meals = UINT_MAX;
 	return (table);
 }
 
