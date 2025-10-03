@@ -6,9 +6,10 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 10:53:27 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/23 14:18:45 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:25:23 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "philosophers.h"
 
 static int	contains_nondigits(char *str)
@@ -58,7 +59,6 @@ static t_table	*parse_input(int argc, char **argv, char *flag)
 		params[index - 1] = checked_atoi(argv[index], flag);
 	if (*flag)
 		return (table);
-	pthread_mutex_init(&(table->write_mutex), NULL);
 	table->count = params[0];
 	table->time_to_die = params[1];
 	table->time_to_eat = params[2];
@@ -69,6 +69,7 @@ static t_table	*parse_input(int argc, char **argv, char *flag)
 		table->required_meals = UINT_MAX;
 	return (table);
 }
+
 
 t_table	*parse_to_table(int argc, char **argv)
 {

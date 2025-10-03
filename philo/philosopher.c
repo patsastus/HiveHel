@@ -6,10 +6,9 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:58:41 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/18 12:04:42 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/09/30 14:36:20 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers.h"
 
 t_philo	*init_philosopher(unsigned int id, unsigned long start, \
@@ -22,6 +21,7 @@ t_table *table)
 		return (NULL);
 	memset(philo, 0, sizeof(t_philo));
 	philo->id = id;
+	philo->count = table->count;
 	philo->start = start;
 	philo->last_meal = start;
 	philo->write_mutex = &(table->write_mutex);
@@ -31,6 +31,7 @@ t_table *table)
 	philo->time_to_eat = table->time_to_eat;
 	philo->time_to_sleep = table->time_to_sleep;
 	philo->meals_goal = table->required_meals;
+	philo->should_stop = &(table->someone_died);
 	return (philo);
 }
 
@@ -39,49 +40,31 @@ void	take_forks(t_philo *philo)
 	unsigned long	time;
 	pthread_mutex_t	*temp;
 
-	if (philo->dead)
-		return ;
-	if (philo->id % 2)
+	if (philo->id == 1)
 		temp = &(philo->own_fork);
 	else
 		temp = philo->other_fork;
 	if (!temp)
 		return ;
 	pthread_mutex_lock(temp);
-	if (philo->id % 2)
+	time = gettime_in_ms();
+	if (time - philo->last_meal <= philo->time_to_die)
+		write_message('f', philo, time);
+	if (philo->id == 1)
 		temp = philo->other_fork;
 	else
 		temp = &(philo->own_fork);
 	pthread_mutex_lock(temp);
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	philo->holding = 1;
-	pthread_mutex_unlock(&(philo->monitor_mutex));
-	pthread_mutex_lock(philo->write_mutex);
-	printf("%u holding\n", philo->id);
-	pthread_mutex_unlock(philo->write_mutex);
 	time = gettime_in_ms();
-	if (time == ULONG_MAX)
-		return ;
-	write_message('f', philo, time);
+	if (time - philo->last_meal <= philo->time_to_die)
+		write_message('f', philo, time);
 }
 
-void	release_forks(t_philo *philo, int silent)
+void	release_forks(t_philo *philo)
 {
-	unsigned long	time;
-
-	if (philo->dead)
-		silent = 1;
-	time = gettime_in_ms();
 	pthread_mutex_unlock(&(philo->own_fork));
-	pthread_mutex_unlock(philo->other_fork);
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	philo->holding = 0;
-	pthread_mutex_unlock(&(philo->monitor_mutex));
-	pthread_mutex_lock(philo->write_mutex);
-	printf("%u releasing\n", philo->id);
-	pthread_mutex_unlock(philo->write_mutex);
-	if (!silent)
-		write_message('r', philo, time);
+	if (philo->other_fork)
+		pthread_mutex_unlock(philo->other_fork);
 }
 
 void	*loop_philo(void *input)
@@ -91,8 +74,8 @@ void	*loop_philo(void *input)
 
 	i = 0;
 	philo = input;
-	if (philo->id % 2)
-		usleep(BLINK);
+	if (philo->id % 2 == 0)
+		targeted_sleep(philo, philo->start + philo->time_to_eat + 10);
 	while (!philo->dead && philo->meals_eaten < philo->meals_goal)
 	{
 		thinking(philo);
@@ -103,13 +86,5 @@ void	*loop_philo(void *input)
 		}
 		usleep(BLINK);
 	}
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	if (philo->holding)
-	{
-		pthread_mutex_unlock(&(philo->monitor_mutex));
-		release_forks(philo, 0);
-	}
-	else
-		pthread_mutex_unlock(&(philo->monitor_mutex));
 	return (NULL);
 }

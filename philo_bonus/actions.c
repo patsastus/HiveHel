@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 16:28:31 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/01 12:01:09 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/02 17:35:42 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,16 @@ void	eating(t_philo *philo)
 {
 	unsigned long	time;
 
+	if (philo->dead)
+		return ;
 	take_forks(philo);
 	time = gettime_in_ms();
-	pthread_mutex_lock(&(philo->monitor_mutex));
+	if (time == ULONG_MAX)
+		dying(philo, 5);
 	if (time - philo->last_meal > philo->time_to_die)
 	{
-		pthread_mutex_unlock(&(philo->monitor_mutex));
 		release_forks(philo);
-		dying(philo, 0);
+		dying(philo, (int)philo->dead);
 		return ;
 	}
 	else
@@ -32,7 +34,6 @@ void	eating(t_philo *philo)
 		philo->current_action = 'e';
 		philo->meals_eaten += 1;
 	}
-	pthread_mutex_unlock(&(philo->monitor_mutex));
 	write_message('e', philo, time);
 	targeted_sleep(philo, philo->time_to_eat + time);
 	release_forks(philo);
@@ -44,10 +45,10 @@ void	sleeping(t_philo *philo)
 
 	if (philo->dead)
 		return ;
-	pthread_mutex_lock(&(philo->monitor_mutex));
 	philo->current_action = 's';
-	pthread_mutex_unlock(&(philo->monitor_mutex));
 	time = gettime_in_ms();
+	if (time == ULONG_MAX)
+		dying(philo, 5);
 	write_message('s', philo, time);
 	targeted_sleep(philo, philo->time_to_sleep + time);
 }
@@ -55,39 +56,30 @@ void	sleeping(t_philo *philo)
 void	thinking(t_philo *philo)
 {
 	unsigned long	time;
-	long			target;
 
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	if (philo->current_action == 't')
+	if (philo->dead)
+		return ;
+	time = gettime_in_ms();
+	if (time - philo->last_meal > philo->time_to_die)
 	{
-		pthread_mutex_unlock(&(philo->monitor_mutex));
+		dying(philo, 0);
 		return ;
 	}
+	if (philo->current_action == 't')
+		return ;
 	philo->current_action = 't';
-	pthread_mutex_unlock(&(philo->monitor_mutex));
-	time = gettime_in_ms();
 	write_message('t', philo, time);
-	target = philo->time_to_die - (time - philo->last_meal) \
-- philo->time_to_eat / 2;
-	if (target > 0 && philo->meals_eaten != 0)
-	{
-		if (target < philo->time_to_eat)
-			targeted_sleep(philo, time + target);
-		else if (target > philo->time_to_eat)
-			targeted_sleep(philo, time + philo->time_to_eat + 5);
-	}
 }
 
 void	dying(t_philo *philo, int silent)
 {
 	unsigned long	time;
 
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	philo->dead = 1 + silent;
-	pthread_mutex_unlock(&(philo->monitor_mutex));
-	if (philo->dead == 1)
+	if (!silent)
 	{
 		time = gettime_in_ms();
 		write_message('d', philo, time);
+		sem_post(philo->death);
 	}
+	philo->dead = 1 + silent;
 }

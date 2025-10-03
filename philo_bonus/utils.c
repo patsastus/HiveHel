@@ -6,49 +6,58 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 16:26:37 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/01 13:23:32 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/03 12:10:22 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
+
+void	free_philo(t_philo *philo)
+{
+	if (!philo)
+		return ;
+	sem_close(philo->write);
+	sem_close(philo->forks);
+	sem_close(philo->death);
+	sem_close(philo->fork_mutex);
+	free(philo);
+}
 
 void	targeted_sleep(t_philo *philo, unsigned long target)
 {
 	unsigned long	temp;
 
 	temp = gettime_in_ms();
-	pthread_mutex_lock(&(philo->monitor_mutex));
-	while (temp < target && !philo->dead)
+	while (temp < target)
 	{
-		pthread_mutex_unlock(&(philo->monitor_mutex));
 		usleep(BLINK);
 		temp = gettime_in_ms();
-		pthread_mutex_lock(&(philo->monitor_mutex));
+		if (temp - philo->last_meal > philo->time_to_die)
+		{
+			dying(philo, 0);
+			return ;
+		}
 	}
-	pthread_mutex_unlock(&(philo->monitor_mutex));
 }
 
+//if write is of type DIED, don't repost write semaphor so no extra output made
 void	write_message(char type, t_philo *philo, unsigned long time)
 {
-	pthread_mutex_lock(philo->write_mutex);
-	if (*(philo->should_stop) || (philo->dead && type != 'd'))
-	{
-		pthread_mutex_unlock(philo->write_mutex);
-		return ;
-	}
+	const char	*msg[] = {"%u %d is eating\n", "%u %d is sleeping\n", \
+"%u %d is thinking\n", "%u %d has taken a fork\n", "%u %d died\n"};
+
+	sem_wait(philo->write);
 	if (type == 'e')
-		printf(EATING, (time - philo->start), philo->id);
+		printf(msg[0], (time - philo->start), philo->id, philo->meals_eaten);
 	if (type == 's')
-		printf(SLEEPING, (time - philo->start), philo->id);
+		printf(msg[1], (time - philo->start), philo->id);
 	if (type == 't')
-		printf(THINKING, (time - philo->start), philo->id);
+		printf(msg[2], (time - philo->start), philo->id);
 	if (type == 'f')
-		printf(FORKING, (time - philo->start), philo->id);
+		printf(msg[3], (time - philo->start), philo->id);
 	if (type == 'd')
-	{
-		printf(DIED, (time - philo->start), philo->id);
-		*(philo->should_stop) = philo->id;
-	}
-	pthread_mutex_unlock(philo->write_mutex);
+		printf(msg[4], (time - philo->start), philo->id);
+	if (type != 'd')
+		sem_post(philo->write);
 }
 
 //returns a timestamp in milliseconds

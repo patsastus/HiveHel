@@ -6,10 +6,9 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 11:13:40 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/18 10:54:07 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/01 12:01:41 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "philosophers.h"
 
 static int	all_eaten(t_table *table)
@@ -37,11 +36,14 @@ table->philos[i]->current_action != 'e')
 static int	should_philo_die(t_table *table, int i, unsigned long time)
 {
 	pthread_mutex_lock(&(table->philos[i]->monitor_mutex));
-	if (time - table->philos[i]->last_meal > table->time_to_die)
+	if (time - table->philos[i]->last_meal > table->time_to_die && \
+table->philos[i]->meals_eaten < table->required_meals)
 	{
 		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
 		dying(table->philos[i], 0);
+		pthread_mutex_lock(&(table->philos[i]->monitor_mutex));
 		table->someone_died = (char)(i + 1);
+		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
 		return (1);
 	}
 	else
@@ -66,7 +68,9 @@ void	*monitor(void *input)
 		time = gettime_in_ms();
 		while (i < table->count && time != ULONG_MAX)
 		{
-			should_philo_die(table, i, time);
+			table->someone_died = should_philo_die(table, i, time);
+			if (table->someone_died)
+				break ;
 			++i;
 		}
 		if (all_eaten(table))
