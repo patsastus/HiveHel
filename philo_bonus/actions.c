@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 16:28:31 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/02 17:35:42 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/15 12:10:21 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,8 @@ void	eating(t_philo *philo)
 	if (philo->dead)
 		return ;
 	take_forks(philo);
+	sem_wait(philo->self_mutex);
 	time = gettime_in_ms();
-	if (time == ULONG_MAX)
-		dying(philo, 5);
 	if (time - philo->last_meal > philo->time_to_die)
 	{
 		release_forks(philo);
@@ -35,6 +34,7 @@ void	eating(t_philo *philo)
 		philo->meals_eaten += 1;
 	}
 	write_message('e', philo, time);
+	sem_post(philo->self_mutex);
 	targeted_sleep(philo, philo->time_to_eat + time);
 	release_forks(philo);
 }
@@ -47,8 +47,6 @@ void	sleeping(t_philo *philo)
 		return ;
 	philo->current_action = 's';
 	time = gettime_in_ms();
-	if (time == ULONG_MAX)
-		dying(philo, 5);
 	write_message('s', philo, time);
 	targeted_sleep(philo, philo->time_to_sleep + time);
 }
@@ -82,4 +80,10 @@ void	dying(t_philo *philo, int silent)
 		sem_post(philo->death);
 	}
 	philo->dead = 1 + silent;
+}
+
+void	release_forks(t_philo *philo)
+{
+	sem_post(philo->forks);
+	sem_post(philo->forks);
 }

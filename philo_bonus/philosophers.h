@@ -6,12 +6,13 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:35:31 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/03 12:25:23 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/15 11:47:07 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
+# include <stdatomic.h>
 # include <fcntl.h>
 # include <semaphore.h>
 # include <pthread.h>
@@ -37,9 +38,11 @@ typedef struct s_philo
 {
 	int				pid;
 	sem_t			*fork_mutex;
+	sem_t			*self_mutex;
 	sem_t			*forks;
 	sem_t			*write;
 	sem_t			*death;
+	char			self_mutex_name[10];
 	unsigned int	id;
 	unsigned long	start;
 	unsigned long	last_meal;
@@ -48,9 +51,9 @@ typedef struct s_philo
 	unsigned int	time_to_die;
 	unsigned int	time_to_eat;
 	unsigned int	time_to_sleep;
-	char			current_action;
-	char			dead;
-	char			should_stop;
+	atomic_char		current_action;
+	atomic_char		dead;
+	atomic_char		should_stop;
 }	t_philo;
 
 typedef struct s_table
@@ -68,6 +71,7 @@ typedef struct s_table
 	unsigned int	time_to_sleep;
 	unsigned int	required_meals;
 	char			error_flag;
+	int				loop_index;
 }	t_table;
 
 //utils.c
@@ -75,16 +79,20 @@ size_t			ft_strlen(const char *s);
 unsigned long	gettime_in_ms(void);
 void			write_message(char type, t_philo *philo, unsigned long time);
 void			targeted_sleep(t_philo *philo, unsigned long target);
-void			free_philo(t_philo *philo);
+void			free_philo(t_table *table);
 
 //philosopher.c
-t_philo			*init_philosopher(unsigned int id, unsigned long start_time, \
-t_table *table);
+void			*should_stop_watcher(void *input);
+void			*should_die(void *input);
 void			take_forks(t_philo *philo);
 void			release_forks(t_philo *philo);
 void			loop_philo(void *input);
 
 //init.c
+int				make_threads(pthread_t *threads, t_table *table);
+void			init_philo_semaphores(t_philo *philo);
+t_philo			*init_philosopher(unsigned int id, unsigned long start_time, \
+t_table *table);
 void			init_philos(t_table *table, unsigned long start);
 void			init_semaphores(t_table *table);
 

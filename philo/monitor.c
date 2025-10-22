@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/10 11:13:40 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/01 12:01:41 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/13 12:38:12 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
@@ -41,9 +41,6 @@ table->philos[i]->meals_eaten < table->required_meals)
 	{
 		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
 		dying(table->philos[i], 0);
-		pthread_mutex_lock(&(table->philos[i]->monitor_mutex));
-		table->someone_died = (char)(i + 1);
-		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
 		return (1);
 	}
 	else

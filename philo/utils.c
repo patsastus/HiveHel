@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 16:26:37 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/01 13:23:32 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/13 12:37:27 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"

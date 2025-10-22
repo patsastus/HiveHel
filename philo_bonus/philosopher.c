@@ -6,13 +6,13 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:58:41 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/03 14:12:45 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/15 15:32:42 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-static void	*should_stop_watcher(void *input)
+void	*should_stop_watcher(void *input)
 {
 	t_philo	*philo;
 
@@ -20,16 +20,19 @@ static void	*should_stop_watcher(void *input)
 	sem_wait(philo->death);
 	sem_post(philo->death);
 	philo->should_stop = 1;
-	usleep(BLINK);
+	usleep(MS);
 	return (NULL);
 }
 
-static void	*should_die(void *input)
+void	*should_die(void *input)
 {
+	t_table			*table;
 	t_philo			*philo;
 	unsigned long	time;
 
-	philo = (t_philo *)input;
+	table = (t_table *)input;
+	philo = table->philos[table->loop_index];
+	sem_wait(philo->self_mutex);
 	while (!philo->should_stop && !philo->dead)
 	{
 		time = gettime_in_ms();
@@ -37,9 +40,12 @@ static void	*should_die(void *input)
 		{
 			dying(philo, 0);
 			usleep(MS);
-			free_philo(philo);
+			free_philo(table);
+			exit(1);
 		}
+		sem_post(philo->self_mutex);
 		usleep(MS);
+		sem_wait(philo->self_mutex);
 	}
 	return (NULL);
 }
@@ -58,10 +64,18 @@ void	take_forks(t_philo *philo)
 	sem_post(philo->fork_mutex);
 }
 
-void	release_forks(t_philo *philo)
+static int	action_loop(t_philo *philo)
 {
-	sem_post(philo->forks);
-	sem_post(philo->forks);
+	thinking(philo);
+	eating(philo);
+	if (philo->meals_eaten == philo->meals_goal)
+	{
+		philo->should_stop = 1;
+		return (1);
+	}
+	sleeping(philo);
+	usleep(BLINK);
+	return (0);
 }
 
 void	loop_philo(void *input)
@@ -69,26 +83,19 @@ void	loop_philo(void *input)
 	t_philo		*philo;
 	pthread_t	someone_died_thread;
 	pthread_t	self_died_thread;
-	int			value;
+	int			v;
 
-	philo = (t_philo *)input;
-	pthread_create(&someone_died_thread, NULL, should_stop_watcher, philo);
-	pthread_create(&self_died_thread, NULL, should_die, philo);
-	pthread_detach(someone_died_thread);
-	while (!philo->dead && !philo->should_stop)
-	{
-		thinking(philo);
-		eating(philo);
-		if (philo->meals_eaten == philo->meals_goal)
-		{
-			philo->should_stop = 1;
-			break ;
-		}
-		sleeping(philo);
-		usleep(BLINK);
-	}
-	pthread_join(self_died_thread, NULL);
-	value = !(philo->meals_eaten == philo->meals_goal);
-	free_philo(philo);
-	exit(value);
+	philo = ((t_table *)input)->philos[((t_table *)input)->loop_index];
+	v = pthread_create(&someone_died_thread, NULL, should_stop_watcher, philo);
+	if (!v)
+		v = pthread_create(&self_died_thread, NULL, should_die, input) * 2;
+	if (v != -1)
+		pthread_detach(someone_died_thread);
+	while (!v && !philo->dead && !philo->should_stop && !action_loop(philo))
+		continue ;
+	if (v == 0)
+		pthread_join(self_died_thread, NULL);
+	v = !(philo->meals_eaten == philo->meals_goal);
+	free_philo((t_table *)input);
+	exit(v);
 }

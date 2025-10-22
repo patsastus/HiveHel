@@ -6,10 +6,55 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/25 10:04:59 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/03 12:27:53 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/15 11:48:13 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
+
+int	make_threads(pthread_t *threads, t_table *table)
+{
+	int		value[2];
+	t_philo	*philo;
+
+	philo = table->philos[table->loop_index];
+	value[0] = pthread_create(&threads[0], NULL, should_stop_watcher, philo);
+	if (!value[0])
+	{
+		pthread_detach(threads[0]);
+		value[1] = pthread_create(&threads[1], NULL, should_die, table);
+	}
+	return (value[0] * 2 + value[1]);
+}
+
+/*
+	init a personalized semaphore name for each philo, unlink it in case it
+	already existed, and open it
+*/
+void	init_philo_semaphores(t_philo *philo)
+{
+	const char	*template = "/philo000";
+	int			i;
+	int			temp;
+
+	philo->forks = sem_open(FORKS_SEM_NAME, 0);
+	philo->write = sem_open(WRITE_SEM_NAME, 0);
+	philo->death = sem_open(DEATH_SEM_NAME, 0);
+	philo->fork_mutex = sem_open(FORK_MUTEX, 0);
+	i = -1;
+	while (++i < 9)
+		philo->self_mutex_name[i] = template[i];
+	temp = philo->id / 10;
+	i = 7;
+	philo->self_mutex_name[8] = philo->id % 10 + '0';
+	while (temp > 0)
+	{
+		philo->self_mutex_name[i] = temp % 10 + '0';
+		temp /= 10;
+		--i;
+	}
+	sem_unlink(philo->self_mutex_name);
+	philo->self_mutex = sem_open(philo->self_mutex_name, O_CREAT, 0600, 1);
+}
 
 t_philo	*init_philosopher(unsigned int id, unsigned long start, \
 t_table *table)
@@ -76,5 +121,3 @@ table->death == SEM_FAILED || table->fork_mutex == SEM_FAILED)
 		table->error_flag = 3;
 	}
 }
-
-

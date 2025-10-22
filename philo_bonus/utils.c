@@ -6,20 +6,39 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 16:26:37 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/03 12:10:22 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/15 10:38:28 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
 
-void	free_philo(t_philo *philo)
+/*
+	frees the table struct associated with a child process, where only the philo
+	for that loop has semaphores open
+*/
+void	free_philo(t_table *table)
 {
-	if (!philo)
+	int	i;
+
+	if (!table)
 		return ;
-	sem_close(philo->write);
-	sem_close(philo->forks);
-	sem_close(philo->death);
-	sem_close(philo->fork_mutex);
-	free(philo);
+	i = -1;
+	while (++i < (int)table->count)
+	{
+		if (i == table->loop_index)
+		{
+			sem_close(table->philos[i]->write);
+			sem_close(table->philos[i]->forks);
+			sem_close(table->philos[i]->death);
+			sem_close(table->philos[i]->fork_mutex);
+			sem_close(table->philos[i]->self_mutex);
+			sem_unlink(table->philos[i]->self_mutex_name);
+			table->philos[i]->should_stop = 1;
+			usleep(MS * 2);
+		}
+		free(table->philos[i]);
+	}
+	free(table->philos);
+	free(table);
 }
 
 void	targeted_sleep(t_philo *philo, unsigned long target)
@@ -27,15 +46,10 @@ void	targeted_sleep(t_philo *philo, unsigned long target)
 	unsigned long	temp;
 
 	temp = gettime_in_ms();
-	while (temp < target)
+	while (temp < target && !philo->dead)
 	{
 		usleep(BLINK);
 		temp = gettime_in_ms();
-		if (temp - philo->last_meal > philo->time_to_die)
-		{
-			dying(philo, 0);
-			return ;
-		}
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:58:41 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/30 14:36:20 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/16 10:56:17 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
@@ -74,10 +74,10 @@ void	*loop_philo(void *input)
 
 	i = 0;
 	philo = input;
-	if (philo->id % 2 == 0)
-		targeted_sleep(philo, philo->start + philo->time_to_eat + 10);
+	pthread_mutex_lock(&philo->monitor_mutex);
 	while (!philo->dead && philo->meals_eaten < philo->meals_goal)
 	{
+		pthread_mutex_unlock(&philo->monitor_mutex);
 		thinking(philo);
 		if (philo->other_fork)
 		{
@@ -85,6 +85,8 @@ void	*loop_philo(void *input)
 			sleeping(philo);
 		}
 		usleep(BLINK);
+		pthread_mutex_lock(&philo->monitor_mutex);
 	}
+	pthread_mutex_unlock(&philo->monitor_mutex);
 	return (NULL);
 }

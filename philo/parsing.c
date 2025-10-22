@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/09 10:53:27 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/23 14:18:45 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/14 12:40:19 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
@@ -32,13 +32,13 @@ static unsigned int	checked_atoi(char *input, char *flag)
 		return (0);
 	}
 	val = 0;
-	while (*input && val * 1000 < UINT_MAX)
+	while (*input && val * 10 < UINT_MAX)
 	{
 		val *= 10;
 		val += *input - '0';
 		++input;
 	}
-	if (val * 1000 >= UINT_MAX)
+	if (val * 10 >= UINT_MAX)
 		*flag = 2;
 	return ((unsigned int)val);
 }

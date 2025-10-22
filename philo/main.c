@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:34:30 by nraatika          #+#    #+#             */
-/*   Updated: 2025/10/01 13:58:29 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/14 13:05:40 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "philosophers.h"
@@ -38,7 +38,7 @@ static void	init_philos(t_table *table, unsigned long start)
 		table->philos[0]->other_fork = &(table->philos[i - 1]->own_fork);
 }
 
-static void	run_table(t_table *table, unsigned long start)
+static int	run_table(t_table *table, unsigned long start)
 {
 	unsigned int	i;
 
@@ -46,20 +46,25 @@ static void	run_table(t_table *table, unsigned long start)
 	if (table->error_flag)
 	{
 		free_table(table, 0, 0);
-		return ;
+		return (1);
 	}
 	i = -1;
-	pthread_create(&(table->monitor), NULL, monitor, (void *)table);
 	while (++i < table->count)
 	{
 		if (pthread_create(&(table->philos[i]->thread), NULL, loop_philo, \
 (void *)table->philos[i]))
 		{
-			free_table(table, 1, i);
-			return ;
+			free_table(table, 0, i);
+			return (1);
 		}
 	}
+	if (pthread_create(&(table->monitor), NULL, monitor, (void *)table))
+	{
+		free_table(table, 0, table->count);
+		return (1);
+	}
 	pthread_join(table->monitor, NULL);
+	return (0);
 }
 
 void	end_all_philo_threads(t_table *table, unsigned int num_philos)
@@ -75,7 +80,7 @@ void	end_all_philo_threads(t_table *table, unsigned int num_philos)
 		pthread_mutex_unlock(&(table->philos[i]->monitor_mutex));
 		++i;
 	}
-	usleep(MS);
+	usleep(MS * 2);
 	i = 0;
 	while (i < num_philos)
 	{
@@ -113,13 +118,14 @@ int	main(int argc, char **argv)
 	if (!table)
 		return (1);
 	time = gettime_in_ms();
-	if (time == ULONG_MAX || table->count == 0)
+	if (time == ULONG_MAX || table->count == 0 || table->count > 200 || \
+table->required_meals == 0)
 	{
 		free_table(table, 0, 0);
 		return (1);
 	}
 	table->start = time;
-	run_table(table, time);
-	free_table(table, 0, table->count);
+	if (!run_table(table, time))
+		free_table(table, 0, table->count);
 	return (0);
 }

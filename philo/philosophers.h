@@ -6,7 +6,7 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:35:31 by nraatika          #+#    #+#             */
-/*   Updated: 2025/09/29 15:54:19 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/10/08 13:01:48 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PHILOSOPHERS_H
