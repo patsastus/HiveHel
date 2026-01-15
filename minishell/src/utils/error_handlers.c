@@ -1,0 +1,84 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error_handlers.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zfarah <zfarah@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/05 10:31:11 by zfarah            #+#    #+#             */
+/*   Updated: 2025/09/11 10:43:28 by nraatika         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	syntax_err(int err_code, char *msg)
+{
+	errno = err_code;
+	ft_putstr_fd("Minishell: ", STDERR_FILENO);
+	ft_putstr_fd(msg, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+	set_status(2);
+}
+
+void	runtime_err(int err_code, char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (msg)
+	{
+		ft_putstr_fd(msg, 2);
+		ft_putstr_fd(":", 2);
+	}
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+	if (!get_local_vars()->pipeline)
+		return ;
+	clean_up(true, true);
+	exit(err_code);
+}
+
+void	clean_exit(int err_code, char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (msg)
+	{
+		ft_putstr_fd(msg, 2);
+		ft_putstr_fd(":", 2);
+	}
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+	clean_up(true, true);
+	exit(err_code);
+}
+
+void	cmd_not_found_err(int err_code, char *cmd, bool path_exist)
+{
+	if (err_code != 127 && err_code != 126)
+		runtime_err(errno, cmd);
+	ft_putstr_fd("minishell: ", 2);
+	if (ft_strlen(cmd))
+		ft_putstr_fd(cmd, 2);
+	else
+		ft_putstr_fd("'' ", 2);
+	ft_putstr_fd(":", 2);
+	if (err_code == 126)
+		ft_putstr_fd("Is a directory\n", 2);
+	else if (path_exist)
+		ft_putstr_fd("command not found\n", 2);
+	else
+		ft_putstr_fd("No such file or directory\n", 2);
+	clean_up(true, true);
+	exit(err_code);
+}
+
+void	shell_err(char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	if (msg)
+	{
+		ft_putstr_fd(msg, 2);
+		ft_putstr_fd(":", 2);
+	}
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+}
