@@ -6,7 +6,7 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/06 16:08:59 by nraatika          #+#    #+#              #
-#    Updated: 2026/01/22 18:49:29 by nraatika         ###   ########.fr        #
+#    Updated: 2026/01/22 19:12:24 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CXXFLAGS     := -Wall -Wextra -Werror -std=c++11 -g
 NAME      := office
 
 SRCS  	:=	Bureaucrat.cpp AForm.cpp ShrubberyCreationForm.cpp RobotomyRequestForm.cpp \
-		   	PresidentialPardonForm.cpp main.cpp
+		   	PresidentialPardonForm.cpp Intern.cpp main.cpp
 
 OBJS  := $(patsubst %.cpp,%.o,$(SRCS))
 
@@ -38,7 +38,6 @@ clean:
 
 fclean: 		clean
 	rm -rf $(NAME)
-	rm -rf "Home_shrubbery"
 
 re: 			fclean all
 

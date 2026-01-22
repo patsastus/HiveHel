@@ -1,53 +1,52 @@
 #include <iostream>
 #include "Bureaucrat.hpp"
-#include "Form.hpp"
+#include "AForm.hpp"
+#include "PresidentialPardonForm.hpp"
+#include "RobotomyRequestForm.hpp"
+#include "ShrubberyCreationForm.hpp"
 
 int main() {
-	Bureaucrat def;
-	std::cout << "Default Bureaucrat : "<< def << std::endl;
-	Bureaucrat max("Chad", 1);
-	std::cout << "Maximal Bureaucrat : "<< max << std::endl;
+	int grades[] = {145, 137, 45, 5};
+	int numGrades = 4;
+	AForm *forms[] = {
+		new ShrubberyCreationForm("Home"),
+	   	new RobotomyRequestForm("Donald"),
+	   	new PresidentialPardonForm("Hamburglar")
+	};
+	int numForms = 3;
 
-	std::cout << "Testing creation of forms with illegal grades"<< std::endl << std::endl;
+	std::cout << "Testing executing unsigned forms"<< std::endl << std::endl;
 	{
-		try {
-			Form f("business", 0, 12);
-		}
-		catch (const Form::GradeTooHighException &e){
-			std::cout << "Caught exception : "<< e.what() << std::endl;
+		Bureaucrat a("Steve", grades[numGrades - 1]);
+		for (int i = 0; i < numForms; ++i){
+			a.executeForm(*forms[i]);
 		}
 	}
-	{
-		try {
-			Form f("business", 151, 12);
-		}
-		catch (const Form::GradeTooLowException &e){
-			std::cout << "Caught exception : "<< e.what() << std::endl;
-		}
-	}
-	{
-		try {
-			Form f("business", 12, 0);
-		}
-		catch (const Form::GradeTooHighException &e){
-			std::cout << "Caught exception : "<< e.what() << std::endl;
-		}
-	}
-	{
-		try {
-			Form f("business", 12, 151);
-		}
-		catch (const Form::GradeTooLowException &e){
-			std::cout << "Caught exception : "<< e.what() << std::endl;
-		}
+	
+	Bureaucrat a("David", grades[numGrades - 1]);
+	for (int i = 0; i < numForms; ++i){
+		a.signAForm(*forms[i]);
 	}
 
-	std::cout << std::endl << "Testing signing with correct and incorrect bureaucrats" << std::endl;
+	std::cout << std::endl << "Testing different bureaucrats executing the forms" << std::endl;
 	{
-		Form f("Business license", 149, 149);
-		std::cout << f << std::endl;
-		def.signForm(f);
-		max.signForm(f);
+		for (int i = 0; i < numGrades; ++i){
+			Bureaucrat test = Bureaucrat("Tester", grades[i]);
+			std::cout << "Testing " << test << std::endl;
+			for (int j = 0; j < numForms; ++j){
+				test.executeForm(*forms[j]);
+			}
+			std::cout << "" << std::endl;
+		}
+	}
+	
+	std::cout << std::endl << "Testing a randomness of RobotomyRequestForm" <<  std::endl;
+	for (int i = 0; i < 20; ++i) {
+		a.executeForm(*forms[1]);
+	}
+
+	for (int i = 0; i < numForms; ++i){
+		delete forms[i];
 	}
 	return 0;
 }
