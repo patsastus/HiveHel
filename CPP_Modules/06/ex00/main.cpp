@@ -16,9 +16,11 @@ void testCases() {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc != 2)
+	if (argc == 1)
 		testCases();
-	else 
+	else if (argc == 2)
 		ScalarConverter::convert(argv[1]);
+	else
+		std::cout << "Usage :" << argv[0] << "[string to be converted]" << std::endl;
 	return 0;
 }
