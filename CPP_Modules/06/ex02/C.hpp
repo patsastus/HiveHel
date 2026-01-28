@@ -1,15 +1,11 @@
 #ifndef C_HPP
 #define C_HPP
+#include "Base.hpp"
 
-class C {
+class C : public Base { 
 public:
     C();
-    C(const C& other);
-    C& operator=(const C& other);
-    ~C();
-
-private:
-
+    virtual ~C() override;
 };
 
 #endif // C_HPP

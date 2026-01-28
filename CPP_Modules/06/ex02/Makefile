@@ -6,16 +6,16 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/06 16:08:59 by nraatika          #+#    #+#              #
-#    Updated: 2026/01/27 16:40:59 by nraatika         ###   ########.fr        #
+#    Updated: 2026/01/28 10:58:45 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CXX          := c++
-CXXFLAGS     := -Wall -Wextra -Werror -std=c++11 -g
+CXXFLAGS     := -Wall -Wextra -Werror -std=c++17 -g
 
-NAME      := serialize
+NAME      := identify
 
-SRCS  	:=	Serializer.cpp Data.cpp main.cpp
+SRCS  	:=	Base.cpp A.cpp B.cpp C.cpp Tester.cpp main.cpp
 
 OBJS  := $(patsubst %.cpp,%.o,$(SRCS))
 
