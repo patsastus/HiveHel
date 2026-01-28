@@ -50,21 +50,21 @@ void Tester::identify(Base& p){
 		(void)test;
 		std::cout << "A" << std::endl;
 		return;
-	} catch (std::bad_cast e) {	}
+	} catch (std::exception const& e) {	}
 
 	try {
 		B& test = dynamic_cast<B&>(p);
 		(void)test;
 		std::cout << "B" << std::endl;
 		return;
-	} catch (std::bad_cast e) {	}
+	} catch (std::exception const& e) {	}
 
 	try {
 		C& test = dynamic_cast<C&>(p);
 		(void)test;
 		std::cout << "C" << std::endl;
 		return;
-	} catch (std::bad_cast e) {	}
+	} catch (std::exception const& e) {	}
 }
 
 

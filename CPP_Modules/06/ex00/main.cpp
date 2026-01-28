@@ -8,10 +8,11 @@ void testCases() {
 	{
 	
 		std::cout  << std::endl<< "input characters" << COLOR_RESET << std::endl;
-		std::string tests[] = {"'c'", "'X'", "' '", "'7'", "'~'", "f"};
+		std::string tests[] = {"'c'", "'X'", "' '", "'7'", "'~'", "€"};
 		int len = 6;
 		for (int i=0; i < len; ++i){		
 			ScalarConverter::convert(tests[i]);
+			std::cout << "" << std::endl;
 		}
 	}
 	{
@@ -21,6 +22,7 @@ void testCases() {
 		int len = 7;
 		for (int i=0; i < len; ++i){		
 			ScalarConverter::convert(tests[i]);
+			std::cout << "" << std::endl;
 		}
 	}
 	{
@@ -30,15 +32,17 @@ void testCases() {
 		int len = 10;
 		for (int i=0; i < len; ++i){		
 			ScalarConverter::convert(tests[i]);
+			std::cout << "" << std::endl;
 		}
 	}
 	{
 		std::cout  << std::endl<< COLOR_GREEN << "input doubles" << COLOR_RESET << std::endl;
 		std::string tests[] = {"0", "-42.0", "+42.0", "2147483647.0", "-2147483648.0",
-		   	"9223372036854775807.0","-9223372036854775809.0", "+inf", "-inf", "nan"};
+		   	"14000000000140000000001400000000014000000000.0","-14000000000140000000001400000000014000000000.0", "+inf", "-inf", "nan"};
 		int len = 10;
 		for (int i=0; i < len; ++i){		
 			ScalarConverter::convert(tests[i]);
+			std::cout << "" << std::endl;
 		}
 	}
 }

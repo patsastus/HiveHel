@@ -6,6 +6,7 @@
 #include "C.hpp"
 #include <iostream>
 #include <random>
+#include <exception>
 
 class Tester {
 public:

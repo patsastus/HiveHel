@@ -31,7 +31,8 @@ ScalarConverter::InputType ScalarConverter::recognize(std::string const &input) 
 	} 	   
 	else if (input.back() == 'f' && 
 				( (input.length() >= 2 && std::isdigit(input.at(input.size() - 2))) 
-				|| input.find("inff") != std::string::npos )
+				|| input.find("inff") != std::string::npos 
+				|| input.find("nanf") != std::string::npos )
 			) {
 		return Float;
 	}
@@ -123,8 +124,11 @@ void ScalarConverter::fillArray(Values &array, InputType type){
 	}
 }
 
-void ScalarConverter::printArray(Values &array) {
+void ScalarConverter::printArray(Values &array, InputType type) {
+	if (type == Char)
+		std::cout << COLOR_RED;
 	std::cout << "char: ";
+	std::cout << COLOR_RESET;
 	if (array.possible[Char] && std::isprint(array.c)){
 		std::cout << "'" << array.c << "'" << std::endl;
 	} else if (array.possible[Char]) {
@@ -133,21 +137,30 @@ void ScalarConverter::printArray(Values &array) {
 		std::cout << "impossible" << std::endl;
 	}
 
+	if (type == Int)
+		std::cout << COLOR_RED;
 	std::cout << "int: ";
+	std::cout << COLOR_RESET;
 	if (array.possible[Int]){
 		std::cout << array.i << std::endl;
 	} else {
 		std::cout << "impossible" << std::endl;
 	}
 
+	if (type == Float)
+		std::cout << COLOR_RED;
 	std::cout << "float: ";
+	std::cout << COLOR_RESET;
 	if (array.possible[Float]){
 		std::cout << std::showpoint << array.f << "f" << std::noshowpoint << std::endl;
 	} else {
 		std::cout << "impossible" << std::endl;
 	}
 
+	if (type == Double)
+		std::cout << COLOR_RED;
 	std::cout << "double: ";
+	std::cout << COLOR_RESET;
 	if (array.possible[Double]){
 		std::cout << std::showpoint << array.d<< std::noshowpoint << std::endl;
 	} else {
@@ -206,6 +219,6 @@ void ScalarConverter::convert(std::string const &literal){
 	}
 	if (which != Error) {
 		fillArray(array, which);
-		printArray(array);
+		printArray(array, which);
 	}
 }

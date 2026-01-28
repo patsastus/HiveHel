@@ -2,10 +2,7 @@
 #define B_HPP
 #include "Base.hpp"
 
-class B : public Base  {
-public:
-    B();
-   virtual ~B() override;
+class B : public Base {
 };
 
 #endif // B_HPP
