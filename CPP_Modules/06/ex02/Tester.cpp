@@ -34,10 +34,13 @@ Base* Tester::generate(void){
 void Tester::identify(Base* p){
 	if (A* test = dynamic_cast<A*>(p); test != nullptr) {
 		std::cout << "A" << std::endl;
+		return;
 	} else if (B* test = dynamic_cast<B*>(p); test != nullptr) {
 		std::cout << "B" << std::endl;
+		return;
 	} else if (C* test = dynamic_cast<C*>(p); test != nullptr) {
 		std::cout << "C" << std::endl;
+		return;
 	}
 }
 
@@ -46,18 +49,21 @@ void Tester::identify(Base& p){
 		A& test = dynamic_cast<A&>(p);
 		(void)test;
 		std::cout << "A" << std::endl;
+		return;
 	} catch (std::bad_cast e) {	}
 
 	try {
 		B& test = dynamic_cast<B&>(p);
 		(void)test;
 		std::cout << "B" << std::endl;
+		return;
 	} catch (std::bad_cast e) {	}
 
 	try {
 		C& test = dynamic_cast<C&>(p);
 		(void)test;
 		std::cout << "C" << std::endl;
+		return;
 	} catch (std::bad_cast e) {	}
 }
 
