@@ -22,7 +22,7 @@ int main(){
 	std::cout << std::endl << COLOR_GREEN << "non-const version, run a second time:" << COLOR_RESET << std::endl;
 	iter(array, 4, &addOne);
 
-	std::cout << COLOR_GREEN << "const version :" << COLOR_RESET << std::endl;
+	std::cout << std::endl << COLOR_GREEN << "const version :" << COLOR_RESET << std::endl;
 	iter(constArray, 4, &addOneConst);
 
 	std::cout << std::endl << COLOR_GREEN << "const version, run a second time:" << COLOR_RESET << std::endl;
