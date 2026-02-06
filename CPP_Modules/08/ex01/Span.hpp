@@ -1,12 +1,15 @@
 #ifndef SPAN_HPP
 #define SPAN_HPP
-
-#include <array>
+#include <iterator>
+#include <algorithm>
+#include <vector>
+#include <limits>
 
 class Span {
 	Span();
-	std::array<int> data_;
-
+	std::vector<int> data_;
+	unsigned int N_;
+	
 public:
   	Span(unsigned int size);
     Span(const Span& other);
@@ -16,6 +19,15 @@ public:
 	void addNumber(int input);	
 	unsigned int shortestSpan() const;
 	unsigned int longestSpan() const;
+
+	template <typename Iterator>
+	void addNumbers(Iterator begin, Iterator end){
+		while (begin != end) {
+			addNumber(*begin);
+			++begin;
+		}
+	}
+
 };
 
 #endif // SPAN_HPP

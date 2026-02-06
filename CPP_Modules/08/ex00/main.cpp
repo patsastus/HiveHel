@@ -12,7 +12,7 @@ int main(){
 
 	{	
 	std::list<int>::iterator first = easyfind(intList, 4);
-	std::cout << "Result of search :" << std::endl;
+	std::cout<< COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intList.end())
 		std::cout << "Found "<< *first<< " at index " << std::distance(intList.begin(), first) << std::endl;
 	else
@@ -21,7 +21,7 @@ int main(){
 
 	{	
 	std::list<int>::iterator first = easyfind(intList, 7);
-	std::cout << "Result of search :" << std::endl;
+	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intList.end())
 		std::cout << "Found "<< *first<< " at index " << std::distance(intList.begin(), first) << std::endl;
 	else
@@ -30,7 +30,7 @@ int main(){
 
 	{	
 	std::vector<int>::iterator first = easyfind(intVector, 7);
-	std::cout << "Result of search :" << std::endl;
+	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intVector.end())
 		std::cout << "Found "<< *first<< " at index " << std::distance(intVector.begin(), first) << std::endl;
 	else
@@ -39,7 +39,7 @@ int main(){
 
 	{	
 	std::vector<int>::iterator first = easyfind(intVector, 4);
-	std::cout << "Result of search :" << std::endl;
+	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intVector.end())
 		std::cout << "Found "<< *first<< " at index " << std::distance(intVector.begin(), first) << std::endl;
 	else

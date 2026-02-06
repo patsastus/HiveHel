@@ -6,14 +6,14 @@
 #    By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/06 16:08:59 by nraatika          #+#    #+#              #
-#    Updated: 2026/02/02 15:07:43 by nraatika         ###   ########.fr        #
+#    Updated: 2026/02/06 18:27:36 by nraatika         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CXX          := c++
 CXXFLAGS     := -Wall -Wextra -Werror -std=c++20 -g
 
-NAME      := array
+NAME      := find
 
 SRCS  	:=	main.cpp
 

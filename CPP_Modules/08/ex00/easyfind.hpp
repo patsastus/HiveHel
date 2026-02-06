@@ -1,7 +1,7 @@
 #ifndef EASYFIND_HPP
 #define EASYFIND_HPP
 #include <algorithm>
-#include <concepts> // Required for concepts
+#include <concepts> // Required for concepts (the thing after 'requires'
 #include <ranges>   // Required for std::ranges::range
 					
 template <typename T> 
