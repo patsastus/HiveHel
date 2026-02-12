@@ -17,7 +17,7 @@ Each project is located in its own folder with a dedicated README explaining the
 | :--------------------------- | :----------------------------------------------------------------------------------------------- | :------ |
 | [**push_swap**](./push_swap) | Sorting data on a stack with a limited set of instructions                                       | 92/100  |
 | [**minitalk**](./minitalk)   | A small client-server communication program using UNIX signals (`SIGUSR`).                       | 125/100 |
-| [**fract-ol**](./Fract'ol)   | Creating 'infinitely' zoomable fractal images of Mandelbrot set, Julia set or Newtons integrals  | 125/100 |
+| [**fract-ol**](./fract-ol)   | Creating 'infinitely' zoomable fractal images of Mandelbrot set, Julia set or Newtons integrals  | 125/100 |
 
 ### Circle 3 (System & Multithreading)
 | Project                            | Description                                                                             | Score   |

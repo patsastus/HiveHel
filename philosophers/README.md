@@ -39,6 +39,7 @@ As the example above shows, the program expects some arguments, which are:
 - the time a philosopher eats  (in milliseconds)
 - the time a philosopher sleeps  (in milliseconds)
 - \[an optional number of meals eaten by everyone that triggers the end of the simulation\]
+
 We're asked to not test with values greater than 200 philosophers or times lower than 60 ms.
 
 ### Output
@@ -56,8 +57,11 @@ What the simulation outputs is a simple series of lines, each containing a times
 401 2 is sleeping
 401 1 is thinking
 ```
+
 The above example is the start of a simulation with 2 philosophers, where they eat for 200 ms and sleep for 200 ms.
+
 ### Multi-thread version
+
 In this, I implemented a **philosophers' loop** function, that is run in it's own thread, and only has local knowledge of that philosopher: Timestamps regarding when the whole simulation started, when was the last time it ate, the current state (that cycles *thinking* $\to$ *eating* $\to$ *sleeping* $\to$ *thinking*...). It also needs to keep track of two shared resources: the forks on either side, each of which is shared with another philosopher.
 The main thread runs a **monitor loop**, that checks that none of the philosophers have gone too long without eating (i.e. should have died by now). In order to do this, it has to check some variables in each philosophers' memory; this, and the shared forks, means that there is the possibility of **race conditions** (multiple threads accessing the same memory slot at the same time). To protect against this, I protect access with **mutexes**, so only one thread can have access at once, both for the monitor trying to read a philosophers' state when it's changing it, and two philosophers trying to use the same fork at the same time. 
 There is actually also one more shared resource: each philosopher wants to write to standard out, and we don't want output to be garbled, so there is a mutex to protect write access as well.
@@ -69,11 +73,14 @@ In this, each philosopher runs in it's own **process**, so the problem changes s
 	- if it's equal to 0, the calling process is inserted into a queue, and waits until the semaphore increases
 - `sem_post(sempahore_name)`: the system increases the value of the semaphore by one. 
 	- if the value was previously 0, the first process in the `waiting` queue un-hangs, and continues on from it's `wait` call, and the value goes back to 0.
+
 There is one distinct difference in the problem setup from the multi-thread version: forks are no longer assigned to a philosopher; instead, they're in a shared pool. But there are still only the same number of forks as there are philosophers.
 I use the semaphores in three different ways:
+
 - as a counter of available resources (a *forks-semaphore*). Initialized to the number of philosophers being simulated.
 - as an 'in-use' flag, so only one process writes to standard out at once (*write-semaphore* and *start-eating-semaphore*, the former quite analogous to the write-mutex in the multi-thread version, the latter to batch access to the forks; it does no good for multiple philosophers to grab one fork each, instead I only allow one at a time access to the forks-semaphore, so every philosopher gets 2 forks as quickly as is possible). Initialized to 1.
 - as a 'signalling' flag, to pass some signal to each philosopher (*death-semaphore*, signalling that someone died and the simulation should stop.) Initialized to 0.
+
 Each philosopher process runs three threads: 
 - one running the main logic
 - one monitor-thread to check that it shouldn't have died yet
