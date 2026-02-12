@@ -62,11 +62,9 @@ void	small_sort(t_data *data)
 void	move_to_a(t_data *data, int a_i, int value_b)
 {
 	int	b_i;
-	int	index;
 
 	b_i = index_of(data->b, value_b);
 	calculate_cost(data, a_i, b_i);
-	index = 0;
 	if (data->candidate == 1)
 		move_rotate_both(data, a_i, b_i);
 	if (data->candidate == 2)

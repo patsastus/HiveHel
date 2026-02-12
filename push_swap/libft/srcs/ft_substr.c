@@ -6,10 +6,10 @@
 /*   By: nraatika <nraatika@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 09:34:24 by nraatika          #+#    #+#             */
-/*   Updated: 2025/07/02 15:43:48 by nraatika         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:11:40 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <libft.h>
+#include "libft.h"
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {

@@ -14,7 +14,6 @@
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*ret;
-	size_t	temp;
 	size_t	size;
 
 	size = ft_strlen(s1) + ft_strlen(s2) + 1;
@@ -22,7 +21,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	if (ret == NULL)
 		return (ret);
 	*ret = '\0';
-	temp = ft_strlcat(ret, s1, size);
-	temp = ft_strlcat(ret, s2, size);
+	ft_strlcat(ret, s1, size);
+	ft_strlcat(ret, s2, size);
 	return (ret);
 }

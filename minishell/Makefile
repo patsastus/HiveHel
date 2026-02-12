@@ -9,7 +9,7 @@ NAME		:= minishell
 ## Compiler config
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror -g
-HEADERS		:= -I ./include -I ./libft
+HEADERS		:= -I./include -I./libft
 
 ## Sources
 OBJ_DIR 	:= obj
@@ -37,8 +37,8 @@ OBJS 		:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 ## External modules
 LIBFT_DIR 	:= ./libft
-LIBFT 		:= $(LIBFT_DIR)/libft
-LINKER_LIBS	:= -lreadline
+LIBFT 		:= $(LIBFT_DIR)/libft.a
+LINKER_LIBS	:= -lreadline -lft
 
 #╔════════════════════════════════════════════╗
 #║           🛠️  Build Protocols             ║
@@ -46,18 +46,14 @@ LINKER_LIBS	:= -lreadline
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT) 
-	$(CC) $(CFLAGS) $(HEADERS) $^ -o $@ $(LINKER_LIBS)
+$(NAME): $(OBJS) $(LIBFT)
+	$(CC) $(CFLAGS) $(HEADERS) $^ -o $@ -L$(LIBFT_DIR) $(LINKER_LIBS)
 
 $(OBJ_DIR)/%.o: %.c $(LIBFT)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(HEADERS) -c $< -o $@
 
 $(LIBFT):
-	@git clone -q --depth 1 \
-	--branch v1.0.0 \
-	--single-branch \
-	git@github.com:zakaria552/libft.git $(LIBFT_DIR) > /dev/null 2>&1
 	make -C $(LIBFT_DIR) all
 
 #╔════════════════════════════════════════════╗

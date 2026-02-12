@@ -32,6 +32,6 @@ int	write_hex(int i, int upper)
 
 static void	to_upper(unsigned int u, char *s)
 {
-	u = 1;
+	(void)u;
 	*s = ft_toupper(*s);
 }

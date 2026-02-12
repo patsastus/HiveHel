@@ -9,7 +9,7 @@
 /*   Updated: 2025/04/19 14:48:18 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <libft.h>
+#include "libft.h"
 
 static int	is_in_set(char c, char const *set);
 
@@ -17,11 +17,11 @@ char	*ft_strtrim(char const *s1, char const *set)
 {
 	unsigned int	start;
 	size_t			size;
-	size_t			i;
+	int				i;
 
 	start = 0;
 	i = 0;
-	while (i < ft_strlen(s1) && is_in_set(s1[i], set))
+	while ((size_t)i < ft_strlen(s1) && is_in_set(s1[i], set))
 	{
 		start++;
 		i++;

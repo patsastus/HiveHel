@@ -9,9 +9,9 @@
 /*   Updated: 2025/04/19 14:41:12 by nraatika         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <libft.h>
+#include "libft.h"
 
-static int	pow(int p);
+static int	power(int p);
 static char	*make_str(int n, int *max_pow);
 static void	ft_nbr_str(int n, char *buf, int max_pow);
 
@@ -40,11 +40,11 @@ static void	ft_nbr_str(int n, char *buf, int max_pow)
 		{
 			if (i == 0)
 				buf[i++] = '-';
-			buf[i] = -((n / pow(max_pow - 1)) % 10) + '0';
+			buf[i] = -((n / power(max_pow - 1)) % 10) + '0';
 		}
 		else
 		{
-			buf[i] = (n / pow(max_pow - 1)) % 10 + '0';
+			buf[i] = (n / power(max_pow - 1)) % 10 + '0';
 		}
 		i++;
 		max_pow--;
@@ -53,7 +53,7 @@ static void	ft_nbr_str(int n, char *buf, int max_pow)
 	return ;
 }
 
-static int	pow(int p)
+static int	power(int p)
 {
 	int	ret;
 

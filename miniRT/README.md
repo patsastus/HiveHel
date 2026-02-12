@@ -1,6 +1,6 @@
 # [miniRT] - a minimal raytracer to produce 3D images (**C**)
 
-*This project has been created as part of the 42 curriculum by [me](github.com/patsastus/), [Cheow Yuen](https://github.com/cheowyuen)*
+*This project has been created as part of the 42 curriculum by nraatika, [cwong](https://github.com/cheowyuen)*
 
 ---
 ### Goal
@@ -46,3 +46,4 @@ Our simple implementation means that the program is reasonably responsive, so we
 - **Q, E** moves the element up-down
 - **I, J, K, L** rotates the object 
 
+![Sample image](./minirt-screens/sphere_plane.png)

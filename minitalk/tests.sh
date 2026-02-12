@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 export TEST='testing'
 while true;
 do export TEST=$TEST$TEST;
