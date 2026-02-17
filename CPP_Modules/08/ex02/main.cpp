@@ -1,9 +1,10 @@
 #include <iostream>
 #include <stack>
+#include <vector>
 #include <list>
 #include "MutantStack.hpp"
 #define COLOR_GREEN "\033[32m"
-#define COLOR_RESET "\033[0m" 
+#define COLOR_RESET "\033[0m"
 
 int main(){
 	{
@@ -31,7 +32,7 @@ int main(){
 		mstack.pop();
 		notAStack.pop_back();
 		vectorStack.pop();
-		
+
 		{
 			std::cout << COLOR_GREEN << "Iterating over the MutantStack" << COLOR_RESET << std::endl;
 			MutantStack<int>::iterator it = mstack.begin(), ite = mstack.end();
