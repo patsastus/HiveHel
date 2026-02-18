@@ -1,26 +1,32 @@
 #ifndef BitcoinExchange_HPP
 #define BitcoinExchange_HPP
 #include <map>
-#include <algorithm>
+#include <fstream>
 #include <chrono>
 #include <string>
+#include <cmath>
+#include <cmath>
+#include <stdexcept>
+#include <iostream>
 
 
-typedef typename std::chrono::system_clock::time_point Date;
+typedef typename std::chrono::year_month_day Date;
 
 class BitcoinExchange {
   public:
-    BitcoinExchange(std::string dataPath);
+    BitcoinExchange(const std::string &dataPath);
     BitcoinExchange(const BitcoinExchange &other);
     BitcoinExchange &operator=(const BitcoinExchange &other);
     ~BitcoinExchange();
+    void    parseInputFile(std::ifstream& inputFile);
 
   private:
     BitcoinExchange();
-    std::map<Date, int>   dataBase_;
+    std::map<Date, float>   dataBase_;
 
-    void    readDataBase(std::string path);
-    int     lookup(const Date &d) const;
+    Date    parseDate(const std::string_view& dateStr);
+    void    parseDataBaseFile(std::ifstream& dataFile);
+    float   rateLookup(const Date &d) const;
 };
 
 #endif

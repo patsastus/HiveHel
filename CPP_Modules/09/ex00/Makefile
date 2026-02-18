@@ -15,7 +15,7 @@ CXXFLAGS     := -Wall -Wextra -Werror -std=c++20 -g
 
 NAME      := btc
 
-SRCS  	:=	main.cpp
+SRCS  	:=	main.cpp BitcoinExchange.cpp
 
 OBJS  := $(patsubst %.cpp,%.o,$(SRCS))
 
