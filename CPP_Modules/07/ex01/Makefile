@@ -13,7 +13,7 @@
 CXX          := c++
 CXXFLAGS     := -Wall -Wextra -Werror -std=c++11 -g
 
-NAME      := template
+NAME      := iter
 
 SRCS  	:=	main.cpp
 
