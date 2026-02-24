@@ -9,7 +9,7 @@ template <typename T> class Array {
 public:
 	Array() : content_(new T[0]), size_(0){	};
 
-	Array(unsigned int n): content_(new T[n]), size_(n) { };
+	Array(unsigned int n): content_(new T[n]()), size_(n) { }; //the () after new T[n] ensures that values are zeroed
 
 	Array(Array const & other): content_(new T[other.size_]), size_(other.size_){
 		for (unsigned int i=0; i < size_ ; ++i) {

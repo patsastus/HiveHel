@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Array.hpp"
 #define COLOR_GREEN "\033[32m"
-#define COLOR_RESET "\033[0m" 
+#define COLOR_RESET "\033[0m"
 
 
 int main(){
@@ -45,8 +45,8 @@ int main(){
 
 	try {
 		int test = emptyArray[1];
-		std::cout << "Out bounds read returned " << test << std::endl;
-	} catch (std::exception e) {
+		std::cout << "Out of bounds read returned " << test << std::endl;
+	} catch (std::exception &e) {
 		std::cout << "Caught exception trying to access element out of bounds" << std::endl;
 	}
 
