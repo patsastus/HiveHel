@@ -32,9 +32,9 @@ unsigned int Span::shortestSpan() const{
 	if (data_.size() < 2)
 		throw std::exception();
 	unsigned int min = std::numeric_limits<unsigned int>::max();
-	std::vector<int> copy = data_;
+	std::vector<int> copy = data_;  //std::sort works in_place, so need to work on a copy to satisfy constness of original
 	std::sort(copy.begin(), copy.end());
-	for (size_t i = 1; i < copy.size(); ++i){
+	for (size_t i = 1; i < copy.size(); ++i){ //when vector is sorted, smallest span will be between two adjacent entries
 		unsigned int test = static_cast<unsigned int>(copy[i]) - static_cast<unsigned int>(copy[i - 1]);
 		min = (test < min) ? test : min;
 	}
@@ -47,6 +47,5 @@ unsigned int Span::longestSpan() const{
 	std::vector<int>::const_iterator min = std::min_element(data_.begin(), data_.end());
 	std::vector<int>::const_iterator max = std::max_element(data_.begin(), data_.end());
 	return static_cast<unsigned int>(*max) - static_cast<unsigned int>(*min);
+	//this works because unsigned int over/underflow is defined behaviour
 }
-
-

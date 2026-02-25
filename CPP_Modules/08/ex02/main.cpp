@@ -21,7 +21,7 @@ int main(){
 			++start;
 		}
 
-		std::stack<int> s(mstack); 					//checking that it can be cast to a standard stack;
+		std::stack<int> s(mstack); 					//checking that it can be copied to a standard stack;
 		MutantStack<int> copy;
 	   	copy = mstack;								//copy assignment
 		const MutantStack<int> constCopy(mstack);	//copy constructor & const-ness
@@ -96,6 +96,4 @@ int main(){
 		}
 	}
 	return 0;
-
-
 }

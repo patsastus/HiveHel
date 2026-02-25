@@ -5,6 +5,9 @@
 template <typename T, typename Container = std::deque<T> >
 class MutantStack : public std::stack<T, Container> {
 public:
+    //enforce typing for early/better error messages
+    static_assert(std::same_as<typename Container::value_type, T>, "Container::value_type must match T");
+    //defining some shorter names
 	typedef std::stack<T, Container> StackType;
 	typedef typename StackType::container_type::iterator iterator;
 	typedef typename StackType::container_type::const_iterator const_iterator;

@@ -1,16 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include <iterator> 
+#include <iterator>
 #include "easyfind.hpp"
 #define COLOR_GREEN "\033[32m"
-#define COLOR_RESET "\033[0m" 
+#define COLOR_RESET "\033[0m"
 
 int main(){
 	std::list<int> intList = {1, 2, 3, 4, 5, 4, 25, 4, 42};
 	std::vector<int> intVector = { 6, 7, 8, 9, 10, 7, 25, 35, 7};
 
-	{	
+	{
 	std::list<int>::iterator first = easyfind(intList, 4);
 	std::cout<< COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intList.end())
@@ -19,7 +19,7 @@ int main(){
 		std::cout << "Result not found" << std::endl;
 	}
 
-	{	
+	{
 	std::list<int>::iterator first = easyfind(intList, 7);
 	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intList.end())
@@ -28,7 +28,7 @@ int main(){
 		std::cout << "Result not found" << std::endl;
 	}
 
-	{	
+	{
 	std::vector<int>::iterator first = easyfind(intVector, 7);
 	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intVector.end())
@@ -37,7 +37,7 @@ int main(){
 		std::cout << "Result not found" << std::endl;
 	}
 
-	{	
+	{
 	std::vector<int>::iterator first = easyfind(intVector, 4);
 	std::cout << COLOR_GREEN << "Result of search :" << COLOR_RESET << std::endl;
 	if (first != intVector.end())
@@ -46,5 +46,10 @@ int main(){
 		std::cout << "Result not found" << std::endl;
 	}
 
-
+	//Demonstrating errors, won't compile:
+	/*
+	std::vector<std::string> strVec = {"Hello", "1", "World", "!"};
+	std::vector<std::string>::iterator it = easyfind(strVec, 1);
+	std::cout << (it == strVec.end() ? "true" : "false") << std::endl;
+	*/
 }
