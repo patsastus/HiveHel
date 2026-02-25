@@ -1,7 +1,4 @@
 #include "BitcoinExchange.hpp"
-#include <exception>
-#include <iostream>
-#include <string>
 
 BitcoinExchange::BitcoinExchange() {
 }
@@ -19,7 +16,6 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) {
 
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) {
   if (this != &other) {
-    // TODO
   }
   return *this;
 }
@@ -117,14 +113,14 @@ void    BitcoinExchange::parseInputFile(std::ifstream& File){
             continue;
         } else {
             if (Ymd < dataBase_.begin()->first) { //first date in database
-                std::cerr << "Error: earlier than earliest date " << DatePart << std::endl;
+                std::cerr << "Error: earlier than earliest date in database: " << DatePart << std::endl;
                 continue;
             } else if (Ymd > dataBase_.rbegin()->first) { //last date in database
-                std::cerr << "Error: later than latest date " << DatePart << std::endl;
+                std::cerr << "Error: later than latest date in database: " << DatePart << std::endl;
                 continue;
             }
             float Cost = rateLookup(Ymd);
-            std::cout << DatePart << " => " << Amount << " = " << (Amount * Cost) << std::endl;
+            std::cout << DatePart << " => " << Amount << " = " << std::format("{:.2f}",(static_cast<double>(Amount) * Cost)) << std::endl;
         }
     }
 }

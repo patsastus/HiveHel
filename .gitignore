@@ -53,7 +53,9 @@ dkms.conf
 
 #json
 *.json
+
+#misc
+.zed
+perf.*
 .cache
 CPP_Modules/09/CPP09.en.subject.pdf
-CPP_Modules/09/data.csv
-CPP_Modules/09/input.txt

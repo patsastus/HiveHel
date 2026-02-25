@@ -1,4 +1,4 @@
-#include "PMergeMe.hpp"
+#include "PmergeMe.hpp"
 
 size_t gComparisons = 0;
 
@@ -57,7 +57,7 @@ static std::vector<size_t> getInsertSequence(size_t vectorSize) {
   return sequence;
 }
 
-std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> input) {
+std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input) {
   if (input.size() < 2)
     return input;
 

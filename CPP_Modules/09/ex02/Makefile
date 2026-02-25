@@ -11,11 +11,11 @@
 # **************************************************************************** #
 
 CXX          := c++
-CXXFLAGS     := -Wall -Wextra -Werror -std=c++20 -O3
+CXXFLAGS     := -Wall -Wextra -Werror -std=c++20 -O3 -g
 
 NAME      := PmergeMe
 
-SRCS  	:= PMergeMe.cpp main.cpp
+SRCS  	:= PmergeMe.cpp main.cpp
 
 OBJS  := $(patsubst %.cpp,%.o,$(SRCS))
 

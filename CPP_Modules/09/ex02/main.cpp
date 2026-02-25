@@ -1,4 +1,4 @@
-#include "PMergeMe.hpp"
+#include "PmergeMe.hpp"
 #include <cassert>
 #include <chrono>
 #include <cstring>
@@ -9,8 +9,9 @@
 
 #define COLOR_GREEN "\033[32m"
 #define COLOR_RESET "\033[0m"
-typedef typename std::chrono::time_point<std::chrono::high_resolution_clock>
-    TimePoint;
+typedef typename std::chrono::time_point<std::chrono::high_resolution_clock> TimePoint;
+
+
 
 static size_t getFJComparisonLimit(size_t n) {
   // the theoretical limit is: sum (ceil (log2 (3k/4) ) ), k = 1...n
@@ -51,7 +52,7 @@ void runFordJohnsonTests() {
 
       gComparisons = 0; // Reset counter
       std::vector<vectorNode> sorted =
-          PMergeMe::vectorMergeSort(std::move(input));
+          PMergeMe::vectorMergeSort(input);
 
       // Verify size
       assert(sorted.size() == n && "Elements were lost or duplicated!");
@@ -145,11 +146,8 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Time to process a range of " << argc - 1 << " elements with "
             << COLOR_GREEN << "std::vector" << COLOR_RESET << ": ";
-  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endVec -
-                                                                     startVec)
-                   .count()
-            << " µs" << std::endl;
-  // std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
+  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endVec - startVec).count() << " µs" << std::endl;
+  //std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
   gComparisons = 0;
   TimePoint startList = std::chrono::high_resolution_clock::now();
   try {
@@ -168,9 +166,52 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Time to process a range of " << argc - 1 << " elements with "
             << COLOR_GREEN << "std::list" << COLOR_RESET << ": ";
-  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endList -
-                                                                     startList)
-                   .count()
-            << " µs" << std::endl;
-  // std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
+  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endList - startList).count() << " µs" << std::endl;
+  //std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
+  //refSorts(argc, argv); //add peformance reference using std::sort
 }
+
+/*
+static void refSorts(int argc, char *argv[]){
+    gComparisons = 0;
+    TimePoint start = std::chrono::high_resolution_clock::now();
+    try {
+        std::vector<unsigned int> inputVector =
+            PMergeMe::parseInput<std::vector<unsigned int>>(argc, argv);
+        std::vector<vectorNode> inputNodes;
+        inputNodes.reserve(inputVector.size());
+        for (size_t i = 0; i < inputVector.size(); ++i) {
+            inputNodes.push_back({inputVector[i], {}});
+        }
+        std::sort(inputNodes.begin(), inputNodes.end());
+    } catch (const std::exception &e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+      return;
+    }
+    TimePoint end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time to process a range of " << argc - 1 << " elements with "
+              << COLOR_GREEN << "std::vector" << COLOR_RESET << ": ";
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << std::endl;
+    std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
+
+    gComparisons = 0;
+    start = std::chrono::high_resolution_clock::now();
+    try {
+      std::list<unsigned int> inputList =
+      PMergeMe::parseInput<std::list<unsigned int>>(argc, argv);
+      std::list<listNode> inputNodes;
+      for (auto it = inputList.begin(); it != inputList.end(); ++it) {
+        inputNodes.push_back({*it, {}});
+      }
+      inputNodes.sort();
+    } catch (const std::exception &e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+      return;
+    }
+    end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time to process a range of " << argc - 1 << " elements with "
+              << COLOR_GREEN << "std::list" << COLOR_RESET << ": ";
+    std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << std::endl;
+    std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
+}
+*/
