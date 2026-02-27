@@ -11,8 +11,6 @@
 #define COLOR_RESET "\033[0m"
 typedef typename std::chrono::time_point<std::chrono::high_resolution_clock> TimePoint;
 
-
-
 static size_t getFJComparisonLimit(size_t n) {
   // the theoretical limit is: sum (ceil (log2 (3k/4) ) ), k = 1...n
   size_t total = 0;
@@ -84,7 +82,7 @@ void runFordJohnsonTests() {
       }
 
       gComparisons = 0; // Reset counter
-      std::list<listNode> sorted = PMergeMe::listMergeSort(std::move(input));
+      std::list<listNode> sorted = PMergeMe::listMergeSort(input);
 
       // Verify size
       assert(sorted.size() == n && "Elements were lost or duplicated!");

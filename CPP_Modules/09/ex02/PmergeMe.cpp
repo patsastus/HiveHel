@@ -1,4 +1,7 @@
 #include "PmergeMe.hpp"
+#include <algorithm>
+#include <iterator>
+#include <optional>
 
 size_t gComparisons = 0;
 
@@ -133,7 +136,7 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
  return mainChain;
 }
 
- std::list<listNode> PMergeMe::listMergeSort(std::list<listNode> input) {
+ std::list<listNode> PMergeMe::listMergeSort(std::list<listNode> &input) {
     if (input.size() < 2)
       return input;
     //split into pairs

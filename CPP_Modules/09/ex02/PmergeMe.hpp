@@ -1,12 +1,8 @@
 #ifndef PMERGEME_HPP
 #define PMERGEME_HPP
-#include <algorithm>
-#include <array>
 #include <charconv>
 #include <cstddef>
-#include <iterator>
 #include <list>
-#include <optional>
 #include <stdexcept>
 #include <string_view>
 #include <unordered_set>
@@ -59,7 +55,7 @@ public:
     return results;
   }
   static std::vector<vectorNode> vectorMergeSort(std::vector<vectorNode> &input);
-  static std::list<listNode> listMergeSort(std::list<listNode> input);
+  static std::list<listNode> listMergeSort(std::list<listNode> &input);
 
 private:
   PMergeMe();
