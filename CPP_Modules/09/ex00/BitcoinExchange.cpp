@@ -1,4 +1,8 @@
 #include "BitcoinExchange.hpp"
+#include <stdexcept>
+#include <iostream>
+#include <charconv>
+#include <format>
 
 BitcoinExchange::BitcoinExchange() {
 }
@@ -9,7 +13,11 @@ BitcoinExchange::BitcoinExchange(const std::string &dataPath) {
         throw std::runtime_error("Failed to open data file: " + dataPath);
     }
     parseDataBaseFile(dataFile);
+    if (dataBase_.empty()) {
+        throw std::runtime_error("Database empty after parsing");
+    }
 }
+
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) {
   *this = other;
 }
@@ -112,7 +120,7 @@ void    BitcoinExchange::parseInputFile(std::ifstream& File){
             std::cerr << "Error: invalid amount for date " << DatePart << ": " << AmountPart << std::endl;
             continue;
         } else {
-            if (Ymd < dataBase_.begin()->first) { //first date in database
+            if (Ymd < dataBase_.begin()->first) { //first date in database, (./->)first is the 'key' part of the std::pair<key, value> that the std::map stores
                 std::cerr << "Error: earlier than earliest date in database: " << DatePart << std::endl;
                 continue;
             } else if (Ymd > dataBase_.rbegin()->first) { //last date in database

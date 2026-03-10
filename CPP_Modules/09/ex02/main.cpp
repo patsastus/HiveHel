@@ -11,7 +11,7 @@
 #define COLOR_RESET "\033[0m"
 typedef typename std::chrono::time_point<std::chrono::high_resolution_clock> TimePoint;
 
-static size_t getFJComparisonLimit(size_t n) {
+size_t getFJComparisonLimit(size_t n) {
   // the theoretical limit is: sum (ceil (log2 (3k/4) ) ), k = 1...n
   size_t total = 0;
   for (size_t k = 1; k <= n; ++k) {
@@ -49,13 +49,12 @@ void runFordJohnsonTests() {
       }
 
       gComparisons = 0; // Reset counter
-      std::vector<vectorNode> sorted =
-          PMergeMe::vectorMergeSort(input);
+      std::vector<vectorNode> sorted = PMergeMe::vectorMergeSort(input);
 
       // Verify size
       assert(sorted.size() == n && "Elements were lost or duplicated!");
 
-      // Verify sort order, can't use the pbject comparator directly to not
+      // Verify sort order, can't use the object comparator directly to not
       // affect count
       for (size_t i = 1; i < sorted.size(); ++i) {
         assert(sorted[i - 1].value <= sorted[i].value &&
@@ -106,71 +105,7 @@ void runFordJohnsonTests() {
   std::cout << std::endl << "All stress tests passed!" << std::endl;
 }
 
-int main(int argc, char *argv[]) {
-  if (argc < 3) {
-    std::cerr << "Usage: " << argv[0] << " <at least 2 unsigned integers>"
-              << std::endl;
-    if (argc == 1)
-      runFordJohnsonTests();
-    return 1;
-  }
-
-  TimePoint startVec = std::chrono::high_resolution_clock::now();
-  try {
-    std::vector<unsigned int> inputVector = PMergeMe::parseInput<>(argc, argv);
-    // move values over to my custom struct
-    std::vector<vectorNode> inputNodes;
-    inputNodes.reserve(inputVector.size());
-    for (size_t i = 0; i < inputVector.size(); ++i) {
-      inputNodes.push_back({inputVector[i], {}});
-    }
-
-    std::cout << "Before: ";
-    for (unsigned int i : inputVector) {
-      std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    inputNodes = PMergeMe::vectorMergeSort(inputNodes);
-    std::cout << "After: ";
-    for (vectorNode i : inputNodes) {
-      std::cout << i.value << " ";
-    }
-    std::cout << std::endl;
-  } catch (const std::exception &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
-    return 1;
-  }
-  TimePoint endVec = std::chrono::high_resolution_clock::now();
-
-  std::cout << "Time to process a range of " << argc - 1 << " elements with "
-            << COLOR_GREEN << "std::vector" << COLOR_RESET << ": ";
-  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endVec - startVec).count() << " µs" << std::endl;
-  //std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
-  gComparisons = 0;
-  TimePoint startList = std::chrono::high_resolution_clock::now();
-  try {
-    std::list<unsigned int> inputList =
-        PMergeMe::parseInput<std::list<unsigned int>>(argc, argv);
-    std::list<listNode> inputNodes;
-    for (auto it = inputList.begin(); it != inputList.end(); ++it) {
-      inputNodes.push_back({*it, {}});
-    }
-    inputNodes = PMergeMe::listMergeSort(inputNodes);
-  } catch (const std::exception &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
-    return 1;
-  }
-  TimePoint endList = std::chrono::high_resolution_clock::now();
-
-  std::cout << "Time to process a range of " << argc - 1 << " elements with "
-            << COLOR_GREEN << "std::list" << COLOR_RESET << ": ";
-  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endList - startList).count() << " µs" << std::endl;
-  //std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
-  //refSorts(argc, argv); //add peformance reference using std::sort
-}
-
-/*
-static void refSorts(int argc, char *argv[]){
+void refSorts(int argc, char *argv[]){
     gComparisons = 0;
     TimePoint start = std::chrono::high_resolution_clock::now();
     try {
@@ -212,4 +147,67 @@ static void refSorts(int argc, char *argv[]){
     std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " µs" << std::endl;
     std::cout << "Performed " << gComparisons << " comparisons during sorting." << std::endl;
 }
-*/
+
+int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << " <at least 2 unsigned integers>"
+              << std::endl;
+    if (argc == 1){
+      runFordJohnsonTests();
+    }
+    return 1;
+  }
+
+  TimePoint startVec = std::chrono::high_resolution_clock::now();
+  try {
+    std::vector<unsigned int> inputVector = PMergeMe::parseInput<>(argc, argv);
+    // move values over to my custom struct
+    std::vector<vectorNode> inputNodes;
+    inputNodes.reserve(inputVector.size());
+    for (size_t i = 0; i < inputVector.size(); ++i) {
+      inputNodes.push_back({inputVector[i], {}});
+    }
+
+    std::cout << "Before: ";
+    for (unsigned int i : inputVector) {
+      std::cout << i << " ";
+    }
+    std::cout << std::endl;
+    inputNodes = PMergeMe::vectorMergeSort(inputNodes);
+    std::cout << "After: ";
+    for (vectorNode i : inputNodes) {
+      std::cout << i.value << " ";
+    }
+    std::cout << std::endl;
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
+  TimePoint endVec = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Time to process a range of " << argc - 1 << " elements with "
+            << COLOR_GREEN << "std::vector" << COLOR_RESET << ": ";
+  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endVec - startVec).count() << " µs" << std::endl;
+ // std::cout << "Performed " << gComparisons << " comparisons during sorting. Worst-case allowance :" << getFJComparisonLimit(static_cast<size_t>(argc -1)) << std::endl;
+  gComparisons = 0;
+  TimePoint startList = std::chrono::high_resolution_clock::now();
+  try {
+    std::list<unsigned int> inputList =
+        PMergeMe::parseInput<std::list<unsigned int>>(argc, argv);
+    std::list<listNode> inputNodes;
+    for (auto it = inputList.begin(); it != inputList.end(); ++it) {
+      inputNodes.push_back({*it, {}});
+    }
+    inputNodes = PMergeMe::listMergeSort(inputNodes);
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
+  TimePoint endList = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Time to process a range of " << argc - 1 << " elements with "
+            << COLOR_GREEN << "std::list" << COLOR_RESET << ": ";
+  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endList - startList).count() << " µs" << std::endl;
+  //std::cout << "Performed " << gComparisons << " comparisons during sorting. Worst-case allowance :" << getFJComparisonLimit(static_cast<size_t>(argc -1)) << std::endl;
+ // refSorts(argc, argv);
+}

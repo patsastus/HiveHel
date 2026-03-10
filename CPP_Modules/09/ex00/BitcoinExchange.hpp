@@ -5,11 +5,6 @@
 #include <chrono>
 #include <string>
 #include <cmath>
-#include <cmath>
-#include <format>
-#include <stdexcept>
-#include <iostream>
-
 
 typedef typename std::chrono::year_month_day Date;
 
