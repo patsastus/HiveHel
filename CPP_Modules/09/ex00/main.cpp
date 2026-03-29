@@ -26,9 +26,9 @@ int main(int argc, char *argv[]){
         }
         btc->parseInputFile(inputFile);
     } catch (const std::exception &e) {
-            std::cerr << "Error initializing BitcoinExchange: " << e.what() << std::endl;
+            std::cerr << "Error running BitcoinExchange: " << e.what() << std::endl;
             return 1;
-        }
+    }
     std::cout << "" << std::endl;
 	return 0;
 }

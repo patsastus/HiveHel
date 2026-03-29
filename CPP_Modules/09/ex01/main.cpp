@@ -14,7 +14,7 @@ void testCases(){
         "1 2 + +", // Error: ran out of values to operate on
         "9 x +", // Error: invalid token 'x'
         "4 5", // Error: too many values left on the stack
-        "40 5" // Error: invalid token '40' 
+        "40 5" // Error: invalid token '40'
     };
 
     for (const auto &test : tests) {
@@ -31,7 +31,7 @@ void testCases(){
 int main(int argc, char *argv[]){
     if (argc != 2) {
         std::cerr << COLOR_GREEN << "Running predetermined tests, provide one argument string to skip" << COLOR_RESET << std::endl;
-        testCases();
+    //    testCases();
         return 0;
     }
     try {

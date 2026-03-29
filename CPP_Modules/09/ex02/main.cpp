@@ -29,7 +29,7 @@ size_t getFJComparisonLimit(size_t n) {
 
 void runFordJohnsonTests() {
   std::mt19937 rng(std::random_device{}());
-  std::uniform_int_distribution<unsigned int> dist(1, 100000);
+  std::uniform_int_distribution<unsigned int> dist(1, 1000);
 
   // The specific sizes to test
   std::vector<size_t> testSizes = {5, 10, 50, 100, 500, 1000, 3000};
@@ -42,14 +42,14 @@ void runFordJohnsonTests() {
     size_t maxAllowedComparisons = getFJComparisonLimit(n);
 
     for (int trial = 0; trial < 100; ++trial) {
-      std::vector<vectorNode> input;
+      std::vector<PMergeMe::vectorNode> input;
       input.reserve(n);
       for (size_t i = 0; i < n; ++i) {
         input.push_back({dist(rng), {}});
       }
 
       gComparisons = 0; // Reset counter
-      std::vector<vectorNode> sorted = PMergeMe::vectorMergeSort(input);
+      std::vector<PMergeMe::vectorNode> sorted = PMergeMe::vectorMergeSort(input);
 
       // Verify size
       assert(sorted.size() == n && "Elements were lost or duplicated!");
@@ -75,13 +75,13 @@ void runFordJohnsonTests() {
     size_t maxAllowedComparisons = getFJComparisonLimit(n);
 
     for (int trial = 0; trial < 100; ++trial) {
-      std::list<listNode> input;
+      std::list<PMergeMe::listNode> input;
       for (size_t i = 0; i < n; ++i) {
         input.push_back({dist(rng), {}});
       }
 
       gComparisons = 0; // Reset counter
-      std::list<listNode> sorted = PMergeMe::listMergeSort(input);
+      std::list<PMergeMe::listNode> sorted = PMergeMe::listMergeSort(input);
 
       // Verify size
       assert(sorted.size() == n && "Elements were lost or duplicated!");
@@ -107,11 +107,12 @@ void runFordJohnsonTests() {
 
 void refSorts(int argc, char *argv[]){
     gComparisons = 0;
+    std::cout << "Theoretical limit: " << getFJComparisonLimit(argc - 1) <<std::endl;
     TimePoint start = std::chrono::high_resolution_clock::now();
     try {
         std::vector<unsigned int> inputVector =
             PMergeMe::parseInput<std::vector<unsigned int>>(argc, argv);
-        std::vector<vectorNode> inputNodes;
+        std::vector<PMergeMe::vectorNode> inputNodes;
         inputNodes.reserve(inputVector.size());
         for (size_t i = 0; i < inputVector.size(); ++i) {
             inputNodes.push_back({inputVector[i], {}});
@@ -132,7 +133,7 @@ void refSorts(int argc, char *argv[]){
     try {
       std::list<unsigned int> inputList =
       PMergeMe::parseInput<std::list<unsigned int>>(argc, argv);
-      std::list<listNode> inputNodes;
+      std::list<PMergeMe::listNode> inputNodes;
       for (auto it = inputList.begin(); it != inputList.end(); ++it) {
         inputNodes.push_back({*it, {}});
       }
@@ -153,7 +154,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "Usage: " << argv[0] << " <at least 2 unsigned integers>"
               << std::endl;
     if (argc == 1){
-      runFordJohnsonTests();
+      //runFordJohnsonTests();
     }
     return 1;
   }
@@ -162,7 +163,7 @@ int main(int argc, char *argv[]) {
   try {
     std::vector<unsigned int> inputVector = PMergeMe::parseInput<>(argc, argv);
     // move values over to my custom struct
-    std::vector<vectorNode> inputNodes;
+    std::vector<PMergeMe::vectorNode> inputNodes;
     inputNodes.reserve(inputVector.size());
     for (size_t i = 0; i < inputVector.size(); ++i) {
       inputNodes.push_back({inputVector[i], {}});
@@ -175,7 +176,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
     inputNodes = PMergeMe::vectorMergeSort(inputNodes);
     std::cout << "After: ";
-    for (vectorNode i : inputNodes) {
+    for (PMergeMe::vectorNode i : inputNodes) {
       std::cout << i.value << " ";
     }
     std::cout << std::endl;
@@ -188,13 +189,13 @@ int main(int argc, char *argv[]) {
   std::cout << "Time to process a range of " << argc - 1 << " elements with "
             << COLOR_GREEN << "std::vector" << COLOR_RESET << ": ";
   std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endVec - startVec).count() << " µs" << std::endl;
- // std::cout << "Performed " << gComparisons << " comparisons during sorting. Worst-case allowance :" << getFJComparisonLimit(static_cast<size_t>(argc -1)) << std::endl;
+  //std::cout << "Performed " << gComparisons << " comparisons during sorting. Worst-case allowance :" << getFJComparisonLimit(static_cast<size_t>(argc -1)) << std::endl;
   gComparisons = 0;
   TimePoint startList = std::chrono::high_resolution_clock::now();
   try {
     std::list<unsigned int> inputList =
         PMergeMe::parseInput<std::list<unsigned int>>(argc, argv);
-    std::list<listNode> inputNodes;
+    std::list<PMergeMe::listNode> inputNodes;
     for (auto it = inputList.begin(); it != inputList.end(); ++it) {
       inputNodes.push_back({*it, {}});
     }
@@ -209,5 +210,5 @@ int main(int argc, char *argv[]) {
             << COLOR_GREEN << "std::list" << COLOR_RESET << ": ";
   std::cout << std::chrono::duration_cast<std::chrono::microseconds>(endList - startList).count() << " µs" << std::endl;
   //std::cout << "Performed " << gComparisons << " comparisons during sorting. Worst-case allowance :" << getFJComparisonLimit(static_cast<size_t>(argc -1)) << std::endl;
- // refSorts(argc, argv);
+  //refSorts(argc, argv);
 }

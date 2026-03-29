@@ -4,20 +4,19 @@
 #include <fstream>
 #include <chrono>
 #include <string>
-#include <cmath>
 
 typedef typename std::chrono::year_month_day Date;
 
 class BitcoinExchange {
   public:
     BitcoinExchange(const std::string &dataPath);
+    BitcoinExchange(const BitcoinExchange &other);
+    BitcoinExchange &operator=(BitcoinExchange other);
     ~BitcoinExchange();
     void    parseInputFile(std::ifstream& inputFile);
 
   private:
     BitcoinExchange();
-    BitcoinExchange(const BitcoinExchange &other);
-    BitcoinExchange &operator=(const BitcoinExchange &other);
     std::map<Date, float>   dataBase_;
 
     Date    parseDate(const std::string_view& dateStr);

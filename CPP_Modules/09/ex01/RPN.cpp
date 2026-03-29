@@ -1,5 +1,7 @@
 #include "RPN.hpp"
 #include <string>
+#include <stack>
+#include <sstream>
 
 RPN::RPN() {
 }

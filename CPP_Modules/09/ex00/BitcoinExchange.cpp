@@ -3,6 +3,8 @@
 #include <iostream>
 #include <charconv>
 #include <format>
+#include <utility>
+#include <cmath>
 
 BitcoinExchange::BitcoinExchange() {
 }
@@ -13,18 +15,14 @@ BitcoinExchange::BitcoinExchange(const std::string &dataPath) {
         throw std::runtime_error("Failed to open data file: " + dataPath);
     }
     parseDataBaseFile(dataFile);
-    if (dataBase_.empty()) {
-        throw std::runtime_error("Database empty after parsing");
-    }
+    if (dataBase_.empty()) throw std::runtime_error("Database empty after parsing!");
 }
 
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) {
-  *this = other;
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) : dataBase_(other.dataBase_){
 }
 
-BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) {
-  if (this != &other) {
-  }
+BitcoinExchange &BitcoinExchange::operator=(BitcoinExchange other) {
+  std::swap(dataBase_, other.dataBase_);
   return *this;
 }
 
@@ -115,8 +113,11 @@ void    BitcoinExchange::parseInputFile(std::ifstream& File){
 
         float Amount;
         auto ReturnStruct = std::from_chars(AmountPart.data(), AmountPart.data() + AmountPart.size(), Amount);
-        if (ReturnStruct.ec != std::errc{} || ReturnStruct.ptr !=  AmountPart.data() + AmountPart.size()
-            || !std::isfinite(Amount) || Amount < 0.0f || Amount > 1000.0f) {
+        if (ReturnStruct.ec != std::errc{} ||
+            ReturnStruct.ptr !=  AmountPart.data() + AmountPart.size()||
+            !std::isfinite(Amount) ||
+            Amount < 0.0f ||
+            Amount > 1000.0f) {
             std::cerr << "Error: invalid amount for date " << DatePart << ": " << AmountPart << std::endl;
             continue;
         } else {

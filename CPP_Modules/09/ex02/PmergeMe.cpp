@@ -17,15 +17,24 @@ PMergeMe &PMergeMe::operator=(const PMergeMe &other) {
 
 PMergeMe::~PMergeMe() {}
 
-bool vectorNode::operator<(vectorNode const &other) const{
+bool PMergeMe::vectorNode::operator<(vectorNode const &other) const{
      ++gComparisons;  //count comparisons
      return this->value < other.value;
 }
 
- bool listNode::operator<(const listNode& other) const{
+PMergeMe::vectorNode::vectorNode() : value(0)   {}  ;
+
+PMergeMe::vectorNode::vectorNode(unsigned int val, std::vector<vectorNode> los) : value(val), losers(los) {};
+
+bool PMergeMe::listNode::operator<(const listNode& other) const{
      ++gComparisons;  //count comparisons
      return this->value < other.value;
  }
+
+ PMergeMe::listNode::listNode() : value(0) {};
+
+ PMergeMe::listNode::listNode(unsigned int val, std::list<listNode> los) : value(val), losers(los) {};
+
 
 static size_t getJacobstahl(size_t n) {
   if (n <= 1)
@@ -60,16 +69,16 @@ static std::vector<size_t> getInsertSequence(size_t vectorSize) {
   return sequence;
 }
 
-std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input) {
+std::vector<PMergeMe::vectorNode> PMergeMe::vectorMergeSort(std::vector<PMergeMe::vectorNode> &input) {
   if (input.size() < 2)
     return input;
 
   //split into pairs
   size_t numPairs = input.size() / 2;
-  std::vector<vectorNode> pairs;
+  std::vector<PMergeMe::vectorNode> pairs;
   pairs.reserve(numPairs);
   for (size_t i = 0; i < numPairs; ++i) { //std::move everywhere so we don't do deep copies
-    vectorNode t1 = std::move(input[2 * i]), t2 = std::move(input[2 * i + 1]);
+    PMergeMe::vectorNode t1 = std::move(input[2 * i]), t2 = std::move(input[2 * i + 1]);
     if (t1 < t2) {
       t2.losers.push_back(std::move(t1));
       pairs.push_back(std::move(t2));
@@ -81,7 +90,7 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
   pairs = vectorMergeSort(pairs); // use this same function to sort winners
 
   // make the return vector
-  std::vector<vectorNode> mainChain;
+  std::vector<PMergeMe::vectorNode> mainChain;
   mainChain.reserve(input.size());
 
   // lookup table to avoid comparisons
@@ -97,7 +106,7 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
   }
 
   //check for a straggler not included in pairs
-  std::optional<vectorNode> straggler;
+  std::optional<PMergeMe::vectorNode> straggler;
   if (input.size() % 2) {
       straggler = std::move(input.back());
       input.pop_back();
@@ -108,7 +117,7 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
   size_t numLosers = pairs.size() + (straggler.has_value() ? 1 : 0);
   std::vector<size_t> seq = getInsertSequence(numLosers);
   for (size_t index : seq) {
-      vectorNode loser;
+      PMergeMe::vectorNode loser;
       size_t rangeEnd;
 
      if (index == pairs.size() && straggler.has_value()){
@@ -136,16 +145,16 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
  return mainChain;
 }
 
- std::list<listNode> PMergeMe::listMergeSort(std::list<listNode> &input) {
+ std::list<PMergeMe::listNode> PMergeMe::listMergeSort(std::list<PMergeMe::listNode> &input) {
     if (input.size() < 2)
       return input;
     //split into pairs
     size_t numPairs = input.size() / 2;
-    std::list<listNode> pairs;
+    std::list<PMergeMe::listNode> pairs;
     for (size_t i = 0; i < numPairs; ++i) {
-      listNode t1 = std::move(input.front());
+      PMergeMe::listNode t1 = std::move(input.front());
       input.pop_front();
-      listNode t2 = std::move(input.front());
+      PMergeMe::listNode t2 = std::move(input.front());
       input.pop_front();
       if (t1 < t2) {
           t2.losers.push_back(std::move(t1));
@@ -157,8 +166,8 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
     }
     pairs = listMergeSort(pairs); // use this same function to sort winners;
 
-    std::list<listNode> mainChain;
-    std::vector<std::list<listNode>::iterator> winnerIterators;
+    std::list<PMergeMe::listNode> mainChain;
+    std::vector<std::list<PMergeMe::listNode>::iterator> winnerIterators;
     winnerIterators.reserve(numPairs);
 
     //add first loser and all winners to mainChain, store winner iterators
@@ -169,7 +178,7 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
         winnerIterators.push_back(std::prev(mainChain.end())); //iterator to the last listNode
     }
 
-    std::optional<listNode> straggler;
+    std::optional<PMergeMe::listNode> straggler;
     if (input.size() % 2) {
         straggler = std::move(input.back());
         input.pop_back();
@@ -180,8 +189,8 @@ std::vector<vectorNode> PMergeMe::vectorMergeSort(std::vector<vectorNode> &input
     //treat it as another loser, at last index
     std::vector<size_t> seq = getInsertSequence(numLosers);
     for (size_t index : seq){
-        listNode loser;
-        std::list<listNode>::iterator rangeEnd;
+        PMergeMe::listNode loser;
+        std::list<PMergeMe::listNode>::iterator rangeEnd;
 
        if (straggler.has_value() && index == pairs.size()){
            loser = std::move(*straggler); //need to dereference an optional to get the value
