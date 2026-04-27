@@ -1,0 +1,89 @@
+services:
+    mariadb:
+        container_name: mariadb
+        image: mariadb_image
+        build:
+            context: ./requirements/mariadb
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
+            MYSQL_USER: ${MYSQL_USER:-wp_user}
+            MYSQL_PORT: ${MYSQL_PORT:-3306}
+        command: --port=${MYSQL_PORT}
+        secrets:
+            - mariadb_user_pw
+            - mariadb_root_pw
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mariadb-admin ping -h localhost -u root -p$$(cat /run/secrets/mariadb_root_pw)",
+                ]
+            interval: 5s
+            timeout: 2s
+            retries: 12
+        networks:
+            - backend
+    wordpress:
+        container_name: wordpress
+        image: wordpress_image
+        build:
+            context: ./requirements/wordpress
+            dockerfile: Dockerfile
+        depends_on:
+            mariadb:
+                condition: service_healthy
+        env_file:
+            - .env
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
+            MYSQL_USER: ${MYSQL_USER:-wp_user}
+            MYSQL_PORT: ${MYSQL_PORT:-3306}
+            WP_PORT: ${WP_PORT:-9000}
+            WP_DB_HOST: ${WP_DB_HOST:-mariadb}
+            WP_DEBUG: ${WP_DEBUG:-true}
+        secrets:
+            - mariadb_user_pw
+            - wp_admin_pw
+            - wp_user_pw
+        networks:
+            - inception
+            - backend
+        ports:
+            - 9000:9000
+#    nginx:
+#        container_name: nginx
+#        image: nginx_image
+#        build:
+#            context: ./requirements/nginx
+#            dockerfile: Dockerfile
+#        env_file:
+#            - .env
+#        secrets:
+#            - wp_admin_pw
+#            - wp_user_pw
+#        ports:
+#            - 443:443
+#        depends_on:
+#            - wordpress
+#            - mariadb
+#        networks:
+#            - inception
+networks:
+    inception:
+        name: inception
+        driver: bridge
+    backend:
+        name: backend
+        driver: bridge
+secrets:
+    mariadb_user_pw:
+        file: ../secrets/mariadb_user_pw.txt
+    mariadb_root_pw:
+        file: ../secrets/mariadb_root_pw.txt
+    wp_user_pw:
+        file: ../secrets/wp_user_pass.txt
+    wp_admin_pw:
+        file: ../secrets/wp_bestuser_pass.txt
