@@ -1,0 +1,117 @@
+services:
+    mariadb:
+        container_name: mariadb
+        image: mariadb_image
+        build:
+            context: ./requirements/mariadb
+            dockerfile: Dockerfile
+            args:
+                MARIADB_PORT: ${MARIADB_PORT:-3306}
+        env_file:
+            - .env
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
+            MYSQL_USER: ${MYSQL_USER:-wp_user}
+            MYSQL_PORT: ${MYSQL_PORT:-3306}
+        command: --port=${MYSQL_PORT}
+        secrets:
+            - mariadb_user_pw
+            - mariadb_root_pw
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mariadb-admin ping -h localhost -u root -p$$(cat /run/secrets/mariadb_root_pw)",
+                ]
+            interval: 5s
+            timeout: 2s
+            retries: 12
+        networks:
+            - backend
+        volumes:
+            - mariadb_data:/var/lib/mysql
+
+    wordpress:
+        container_name: wordpress
+        image: wordpress_image
+        build:
+            context: ./requirements/wordpress
+            dockerfile: Dockerfile
+            args:
+                WP_PORT: ${WP_PORT:-9000}
+        depends_on:
+            mariadb:
+                condition: service_healthy
+        env_file:
+            - .env
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
+            MYSQL_USER: ${MYSQL_USER:-wp_user}
+            MYSQL_PORT: ${MYSQL_PORT:-3306}
+            WP_PORT: ${WP_PORT:-9000}
+            WP_DB_HOST: ${WP_DB_HOST:-mariadb}
+            WP_DEBUG: ${WP_DEBUG:-true}
+        secrets:
+            - mariadb_user_pw
+            - wp_admin_pw
+            - wp_user_pw
+        networks:
+            - inception
+            - backend
+        volumes:
+            - wordpress_data:/var/www/wordpress
+
+    nginx:
+        container_name: nginx
+        image: nginx_image
+        build:
+            context: ./requirements/nginx
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        environment:
+            NGINX_PORT: ${NGINX_PORT:-443}
+            WP_URL: ${WP_URL:-nraatika.42.fr}
+            WP_PORT: ${WP_PORT:-9000}
+        ports:
+            - ${NGINX_PORT}:${NGINX_PORT}
+        depends_on:
+            - wordpress
+        networks:
+            - inception
+        volumes:
+            - wordpress_data:/var/www/wordpress
+
+networks:
+    inception:
+        name: inception
+        driver: bridge
+    backend:
+        name: backend
+        driver: bridge
+
+secrets:
+    mariadb_user_pw:
+        file: ../secrets/mariadb_user_pw.txt
+    mariadb_root_pw:
+        file: ../secrets/mariadb_root_pw.txt
+    wp_user_pw:
+        file: ../secrets/wp_user_pass.txt
+    wp_admin_pw:
+        file: ../secrets/wp_bestuser_pass.txt
+
+volumes:
+    wordpress_data:
+        name: wordpress_data
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/nraatika/data/wordpress
+    mariadb_data:
+        name: mariadb_data
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/nraatika/data/mariadb
