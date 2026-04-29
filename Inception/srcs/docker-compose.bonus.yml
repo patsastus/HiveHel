@@ -1,0 +1,28 @@
+services:
+    wordpress:
+        build:
+            context: ./requirements/wordpress
+            dockerfile: Dockerfile
+            args:
+                WP_PORT: ${WP_PORT:-9000}
+                INSTALL_REDIS: true
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
+            MYSQL_USER: ${MYSQL_USER:-wp_user}
+            MYSQL_PORT: ${MYSQL_PORT:-3306}
+            WP_PORT: ${WP_PORT:-9000}
+            WP_DB_HOST: ${WP_DB_HOST:-mariadb}
+            WP_DEBUG: ${WP_DEBUG:-true}
+            REDIS_PORT: ${REDIS_PORT:-6379}
+
+    redis:
+        container_name: redis
+        image: redis_image
+        build:
+            context: ./requirements/bonus/redis
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        restart: always
+        networks:
+            - inception

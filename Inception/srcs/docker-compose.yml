@@ -5,6 +5,8 @@ services:
         build:
             context: ./requirements/mariadb
             dockerfile: Dockerfile
+            args:
+                MYSQL_PORT: ${MYSQL_PORT:-3306}
         env_file:
             - .env
         environment:
@@ -24,14 +26,20 @@ services:
             interval: 5s
             timeout: 2s
             retries: 12
+        restart: always
         networks:
-            - backend
+            - inception
+        volumes:
+            - mariadb_data:/var/lib/mysql
+
     wordpress:
         container_name: wordpress
         image: wordpress_image
         build:
             context: ./requirements/wordpress
             dockerfile: Dockerfile
+            args:
+                WP_PORT: ${WP_PORT:-9000}
         depends_on:
             mariadb:
                 condition: service_healthy
@@ -48,36 +56,39 @@ services:
             - mariadb_user_pw
             - wp_admin_pw
             - wp_user_pw
+        restart: always
         networks:
             - inception
-            - backend
+        volumes:
+            - wordpress_data:/var/www/wordpress
+
+    nginx:
+        container_name: nginx
+        image: nginx_image
+        build:
+            context: ./requirements/nginx
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        environment:
+            NGINX_PORT: ${NGINX_PORT:-443}
+            WP_URL: ${WP_URL:-nraatika.42.fr}
+            WP_PORT: ${WP_PORT:-9000}
         ports:
-            - 9000:9000
-#    nginx:
-#        container_name: nginx
-#        image: nginx_image
-#        build:
-#            context: ./requirements/nginx
-#            dockerfile: Dockerfile
-#        env_file:
-#            - .env
-#        secrets:
-#            - wp_admin_pw
-#            - wp_user_pw
-#        ports:
-#            - 443:443
-#        depends_on:
-#            - wordpress
-#            - mariadb
-#        networks:
-#            - inception
+            - ${NGINX_PORT}:${NGINX_PORT}
+        depends_on:
+            - wordpress
+        restart: always
+        networks:
+            - inception
+        volumes:
+            - wordpress_data:/var/www/wordpress
+
 networks:
     inception:
         name: inception
         driver: bridge
-    backend:
-        name: backend
-        driver: bridge
+
 secrets:
     mariadb_user_pw:
         file: ../secrets/mariadb_user_pw.txt
@@ -87,3 +98,19 @@ secrets:
         file: ../secrets/wp_user_pass.txt
     wp_admin_pw:
         file: ../secrets/wp_bestuser_pass.txt
+
+volumes:
+    wordpress_data:
+        name: wordpress_data
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/nraatika/data/wordpress
+    mariadb_data:
+        name: mariadb_data
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/nraatika/data/mariadb
