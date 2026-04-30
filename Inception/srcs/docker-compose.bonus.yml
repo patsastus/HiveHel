@@ -17,7 +17,7 @@ services:
 
     redis:
         container_name: redis
-        image: redis_image
+        image: redis
         build:
             context: ./requirements/bonus/redis
             dockerfile: Dockerfile
@@ -26,3 +26,33 @@ services:
         restart: always
         networks:
             - inception
+
+    ftp:
+        container_name: ftp
+        image: ftp
+        build:
+            context: ./requirements/bonus/ftp
+            dockerfile: Dockerfile
+            args:
+                RANGE_START: ${FTP_RANGE_START:-21100}
+                RANGE_END: ${FTP_RANGE_END:-21110}
+        env_file:
+            - .env
+        environment:
+            FTP_USER: ${FTP_USER:-ftpuser}
+            FTP_RANGE_START: ${FTP_RANGE_START:-21100}
+            FTP_RANGE_END: ${FTP_RANGE_END:-21110}
+        restart: always
+        secrets:
+            - ftp_user_pw
+        networks:
+            - inception
+        volumes:
+            - wordpress_data:/var/www/wordpress
+        ports:
+            - "21:21"
+            - "${FTP_RANGE_START}-${FTP_RANGE_END}:${FTP_RANGE_START}-${FTP_RANGE_END}"
+
+secrets:
+    ftp_user_pw:
+        file: ../secrets/ftp_user_pw.txt

@@ -1,6 +1,7 @@
 composeFile := srcs/docker-compose.yml
 bonusFile := srcs/docker-compose.bonus.yml
 dataDir := /home/nraatika/data
+s ?=
 
 all: up
 
@@ -31,12 +32,20 @@ status-volumes:
 	@echo ""
 
 logs:
+ifeq ($s,)
 	@services=$$(docker compose -f $(composeFile) -f $(bonusFile) config --services); \
-	for svc in $$services; do \
-		echo "===== Logs for: $$svc ====="; \
-		docker compose -f $(composeFile) -f $(bonusFile) logs $$svc; \
-		echo ""; \
-	done
+    for svc in $$services; do \
+    	echo "===== Logs for: $$svc ====="; \
+    	docker compose -f $(composeFile) -f $(bonusFile) logs $$svc; \
+    	echo ""; \
+    done
+else
+	@echo "===== Logs for: $s =====";
+	docker compose -f $(composeFile) -f $(bonusFile) logs $s -f;
+endif
+
+tls-check:
+
 
 fclean: down
 	-docker stop $$(docker ps -qa) 2>/dev/null || true
@@ -50,4 +59,4 @@ fclean: down
 
 re: fclean all
 
-.PHONY: all up down status status-network status-volumes fclean re
+.PHONY: all up down status status-network status-volumes logs tls-check fclean re

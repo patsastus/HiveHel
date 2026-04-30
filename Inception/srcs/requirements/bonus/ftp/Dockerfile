@@ -1,0 +1,15 @@
+FROM alpine:3.22
+
+ARG RANGE_START
+ARG RANGE_END
+
+RUN apk add --no-cache vsftpd
+
+COPY ./conf/vsftpd.conf /etc/vsftpd/vsftpd.conf
+COPY ./tools/setup.sh /usr/local/bin/setup.sh
+
+RUN chmod +x /usr/local/bin/setup.sh
+
+EXPOSE 21
+
+ENTRYPOINT ["setup.sh"]
