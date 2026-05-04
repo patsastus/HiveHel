@@ -1,0 +1,6 @@
+location ~ ^/adminer(/.*$|$) {
+    fastcgi_pass adminer:${ADMINER_PORT};
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME /var/www/adminer/index.php;
+}

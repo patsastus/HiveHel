@@ -74,7 +74,7 @@ update_option('home', \$siteUrl);
 ?>
 EOF
     echo "Running install script..."
-    php83 $installScript
+    su wpuser -s /bin/sh -c "php83 $installScript"
     rm $installScript
     echo "Done installing"
 fi
@@ -88,6 +88,6 @@ if command -v wp > /dev/null 2>&1; then
     wp redis enable --allow-root --path=/var/www/wordpress
 fi
 
-chown -R nobody:nobody /var/www/wordpress
+chown -R wpuser:wpuser /var/www/wordpress
 
 exec php-fpm83 -F

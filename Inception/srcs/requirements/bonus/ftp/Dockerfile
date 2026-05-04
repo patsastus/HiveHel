@@ -1,8 +1,5 @@
 FROM alpine:3.22
 
-ARG RANGE_START
-ARG RANGE_END
-
 RUN apk add --no-cache vsftpd
 
 COPY ./conf/vsftpd.conf /etc/vsftpd/vsftpd.conf

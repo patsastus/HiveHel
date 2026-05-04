@@ -1,7 +1,6 @@
 FROM alpine:3.22
 
 ARG WP_PORT
-
 ARG INSTALL_REDIS=false
 
 RUN apk add --no-cache\
@@ -23,6 +22,8 @@ RUN apk add --no-cache\
 
 RUN echo "Building WordPress with INSTALL_REDIS=${INSTALL_REDIS}"
 
+RUN adduser -D -u 1000 wpuser
+
 RUN if [ "${INSTALL_REDIS}" == "true" ]; then \
         apk add --no-cache php83-phar php83-pecl-redis; \
         curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar; \
@@ -30,9 +31,11 @@ RUN if [ "${INSTALL_REDIS}" == "true" ]; then \
         mv wp-cli.phar /usr/local/bin/wp; \
     fi
 
-RUN sed -i "s/listen = 127.0.0.1:9000/listen = ${WP_PORT}/g" /etc/php83/php-fpm.d/www.conf
+RUN sed -i "s/^listen = .*/listen = ${WP_PORT}/g" /etc/php83/php-fpm.d/www.conf
+RUN sed -i 's/user = nobody/user = wpuser/g' /etc/php83/php-fpm.d/www.conf
+RUN sed -i 's/group = nobody/group = wpuser/g' /etc/php83/php-fpm.d/www.conf
 
-RUN mkdir -p /var/www/wordpress && chown -R nobody:nobody /var/www/wordpress
+RUN mkdir -p /var/www/wordpress && chown -R wpuser:wpuser /var/www/wordpress
 
 COPY ./tools/setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh

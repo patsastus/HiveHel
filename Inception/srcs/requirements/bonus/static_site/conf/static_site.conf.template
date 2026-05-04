@@ -1,0 +1,7 @@
+location /static/ {
+    resolver 127.0.0.11 valid=30s;
+    set $target http://static_site:${STATIC_PORT}/;
+    proxy_pass $target;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+}

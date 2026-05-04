@@ -10,13 +10,15 @@ fi
 
 sed -i "s/^pasv_min_port=.*/pasv_min_port=${startPort}/" /etc/vsftpd/vsftpd.conf
 sed -i "s/^pasv_max_port=.*/pasv_max_port=${endPort}/" /etc/vsftpd/vsftpd.conf
+sed -i "s|^local_root=.*|local_root=${FTP_PATH}|" /etc/vsftpd/vsftpd.conf
+
 
 if ! id -u "${FTP_USER}" >/dev/null 2>&1; then
-    adduser -D -u 65534 "${FTP_USER}"
+    adduser -D -u 1000 "${FTP_USER}"
     echo "${FTP_USER}:${pass}" | chpasswd
-    mkdir -p /var/www/wordpress
-    chown -R "${FTP_USER}:${FTP_USER}" /var/www/wordpress
-    chmod -R 755 /var/www/wordpress
+    mkdir -p ${FTP_PATH}
+    chown -R "${FTP_USER}:${FTP_USER}" ${FTP_PATH}
+    chmod -R 755 ${FTP_PATH}
 fi
 
 echo "Starting ftp server..."

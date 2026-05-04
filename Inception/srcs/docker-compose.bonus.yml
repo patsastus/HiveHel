@@ -1,19 +1,24 @@
 services:
     wordpress:
         build:
-            context: ./requirements/wordpress
-            dockerfile: Dockerfile
             args:
-                WP_PORT: ${WP_PORT:-9000}
                 INSTALL_REDIS: true
         environment:
-            MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
-            MYSQL_USER: ${MYSQL_USER:-wp_user}
-            MYSQL_PORT: ${MYSQL_PORT:-3306}
-            WP_PORT: ${WP_PORT:-9000}
-            WP_DB_HOST: ${WP_DB_HOST:-mariadb}
-            WP_DEBUG: ${WP_DEBUG:-true}
             REDIS_PORT: ${REDIS_PORT:-6379}
+
+    nginx:
+        depends_on:
+            - adminer
+            - static_site
+            - monitor
+        environment:
+            ADMINER_PORT: ${ADMINER_PORT:-9000}
+            STATIC_PORT: ${STATIC_PORT:-3000}
+            MONITOR_PORT: ${MONITOR_PORT:-5000}
+        volumes:
+            - ./requirements/bonus/adminer/conf/adminer.conf.template:/etc/nginx/templates/adminer.conf.template
+            - ./requirements/bonus/static_site/conf/static_site.conf.template:/etc/nginx/templates/static_site.conf.template
+            - ./requirements/bonus/monitor/conf/monitor.conf.template:/etc/nginx/templates/monitor.conf.template
 
     redis:
         container_name: redis
@@ -21,8 +26,10 @@ services:
         build:
             context: ./requirements/bonus/redis
             dockerfile: Dockerfile
-        env_file:
-            - .env
+            args:
+                REDIS_PORT: ${REDIS_PORT:-6379}
+        environment:
+            REDIS_PORT: ${REDIS_PORT:-6379}
         restart: always
         networks:
             - inception
@@ -33,15 +40,11 @@ services:
         build:
             context: ./requirements/bonus/ftp
             dockerfile: Dockerfile
-            args:
-                RANGE_START: ${FTP_RANGE_START:-21100}
-                RANGE_END: ${FTP_RANGE_END:-21110}
-        env_file:
-            - .env
         environment:
             FTP_USER: ${FTP_USER:-ftpuser}
             FTP_RANGE_START: ${FTP_RANGE_START:-21100}
             FTP_RANGE_END: ${FTP_RANGE_END:-21110}
+            FTP_PATH: ${FTP_PATH:-/var/www/wordpress/wp-content/uploads}
         restart: always
         secrets:
             - ftp_user_pw
@@ -52,6 +55,50 @@ services:
         ports:
             - "21:21"
             - "${FTP_RANGE_START}-${FTP_RANGE_END}:${FTP_RANGE_START}-${FTP_RANGE_END}"
+
+    adminer:
+        container_name: adminer
+        image: adminer
+        environment:
+            ADMINER_PORT: ${ADMINER_PORT:-9000}
+        build:
+            context: ./requirements/bonus/adminer
+            dockerfile: Dockerfile
+            args:
+                - ADMINER_PORT=${ADMINER_PORT:-9000}
+        networks:
+            - inception
+        restart: always
+
+    static_site:
+        container_name: static_site
+        image: static_site
+        environment:
+            STATIC_PORT: ${STATIC_PORT:-3000}
+        build:
+            context: ./requirements/bonus/static_site
+            dockerfile: Dockerfile
+            args:
+                - STATIC_PORT=${STATIC_PORT:-3000}
+        networks:
+            - inception
+        restart: always
+
+    monitor:
+        container_name: monitor
+        image: monitor
+        environment:
+            MONITOR_PORT: ${MONITOR_PORT:-5000}
+        build:
+            context: ./requirements/bonus/monitor
+            dockerfile: Dockerfile
+            args:
+                - MONITOR_PORT=${MONITOR_PORT:-5000}
+        networks:
+            - inception
+        restart: always
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
 
 secrets:
     ftp_user_pw:
