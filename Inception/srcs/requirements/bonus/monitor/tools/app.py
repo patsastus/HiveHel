@@ -22,8 +22,6 @@ def make_stats():
         """
     return html_rows
 
-    return html_rows
-
 
 @app.route("/")
 def home():
