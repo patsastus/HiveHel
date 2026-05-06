@@ -17,8 +17,9 @@ check_secrets:
 		fi; \
 	done
 	@echo "All secrets found. Proceeding..."
-	if [ ! -f srcs/.env ]; then \
-	@echo "Warning: no .env file found in srcs/, using default values";
+	@if [ ! -f srcs/.env ]; then \
+	    echo "Warning: no .env file found in srcs/, using default values"; \
+	fi;
 
 up: check_secrets
 	@mkdir -p $(dataDir)/mariadb $(dataDir)/wordpress

@@ -2,6 +2,7 @@ FROM alpine:3.22
 
 ARG WP_PORT
 ARG INSTALL_REDIS=false
+ARG WP_DEBUG=false
 
 RUN apk add --no-cache\
     php83 \
@@ -33,6 +34,7 @@ RUN if [ "${INSTALL_REDIS}" == "true" ]; then \
 
 RUN sed -i "s/^listen = .*/listen = ${WP_PORT}/g" /etc/php83/php-fpm.d/www.conf
 RUN sed -i 's/user = nobody/user = wpuser/g' /etc/php83/php-fpm.d/www.conf
+RUN sed -i 's/group = nobody/group = wpuser/g' /etc/php83/php-fpm.d/www.conf
 RUN sed -i 's/group = nobody/group = wpuser/g' /etc/php83/php-fpm.d/www.conf
 
 RUN mkdir -p /var/www/wordpress && chown -R wpuser:wpuser /var/www/wordpress

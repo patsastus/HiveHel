@@ -11,7 +11,6 @@ services:
             MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress_db}
             MYSQL_USER: ${MYSQL_USER:-wp_user}
             MYSQL_PORT: ${MYSQL_PORT:-3306}
-        command: --port=${MYSQL_PORT}
         secrets:
             - mariadb_user_pw
             - mariadb_root_pw
@@ -47,7 +46,7 @@ services:
             MYSQL_PORT: ${MYSQL_PORT:-3306}
             WP_PORT: ${WP_PORT:-9000}
             WP_DB_HOST: ${WP_DB_HOST:-mariadb}
-            WP_DEBUG: ${WP_DEBUG:-true}
+            WP_DEBUG: ${WP_DEBUG:-false}
             WP_ADMIN: ${WP_ADMIN:-bestuser}
             WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL:-"nraatika@student.hive.fi"}
             WP_USER: ${WP_USER:-wp_user}

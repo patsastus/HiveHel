@@ -90,28 +90,28 @@ docker-compose
 
 ### 2.2 Environment variables
 The project requires some environment variables to be set to build, but there are default values for everything set in the docker-compose files. If one wants to adjust any variable, the easiest way would be to copy the following example `.env` file into the `srcs/` folder, and make any adjustments you want:
-> ```
-> MYSQL_DATABASE=wordpress_db
-> MYSQL_USER=wp_user
-> MYSQL_PORT=3306
-> WP_ADMIN=bestuser
-> WP_ADMIN_EMAIL="nraatika@student.hive.fi"
-> WP_USER=wp_user
-> WP_USER_EMAIL=wp_user@wishfulthinking.com
-> WP_URL="nraatika.42.fr"
-> WP_TITLE="Best ever blog"
-> WP_DB_HOST=mariadb
-> WP_PORT=9000
-> NGINX_PORT=443
-> REDIS_PORT=6379
-> FTP_USER=ftpuser
-> FTP_RANGE_START=21100
-> FTP_RANGE_END=21110
-> FTP_PATH=/var/www/wordpress/wp-content/uploads
-> ADMINER_PORT=9000
-> STATIC_PORT=3000
-> MONITOR_PORT=5000
-> ```
+```
+MYSQL_USER=wp_user
+MYSQL_DATABASE=wordpress_db
+MYSQL_PORT=3306
+WP_ADMIN=bestuser
+WP_ADMIN_EMAIL="nraatika@student.hive.fi"
+WP_USER=wp_user
+WP_USER_EMAIL=wp_user@wishfulthinking.com
+WP_URL="nraatika.42.fr"
+WP_TITLE="Best ever blog"
+WP_DB_HOST=mariadb
+WP_PORT=9000
+NGINX_PORT=443
+REDIS_PORT=6379
+FTP_USER=ftpuser
+FTP_RANGE_START=21100
+FTP_RANGE_END=21110
+FTP_PATH=/var/www/wordpress/wp-content/uploads
+ADMINER_PORT=9000
+STATIC_PORT=3000
+MONITOR_PORT=5000
+```
 
 ### 2.3 Secrets
 In order for the project to run, passwords for the various users and services must be defined. You can run the following script to create the necessary files, with the default password `42`, and change the contents to whatever you please:
@@ -141,6 +141,7 @@ Running inception is handled via the `make` command:
 ### 3.1 References
 - [Docker compose official documentation](https://docs.docker.com/compose/)
 - [Offical Wordpress Docker image guide](https://hub.docker.com/hardened-images/catalog/dhi/wordpress/guides)
+- 
 
 ### 3.2 AI usage
 I used AI in varied ways during this project, including:

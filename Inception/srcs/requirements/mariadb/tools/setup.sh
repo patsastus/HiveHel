@@ -22,8 +22,8 @@ DELETE FROM mysql.user WHERE User='';
 
 FLUSH PRIVILEGES;
 EOF
-    exec mariadbd --user=mysql --datadir=/var/lib/mysql --init-file=/tmp/init.sql
+    exec mariadbd --user=mysql --datadir=/var/lib/mysql --init-file=/tmp/init.sql --port=${MYSQL_PORT}
 else
     echo "Database already exists, starting it up..."
-    exec mariadbd --user=mysql --datadir=/var/lib/mysql
+    exec mariadbd --user=mysql --datadir=/var/lib/mysql --port=${MYSQL_PORT}
 fi

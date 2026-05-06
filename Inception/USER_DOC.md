@@ -39,4 +39,10 @@ Below is a table of the different users for services defined in the docker-compo
 | **password_file** |  `wp_user_pass.txt`   | `wp_bestuser_pass.txt`    |  `mariadb_user_pw.txt`   | `mariadb_root_pw.txt`    | `ftp_user_pw.txt` |
 
 ## Testing 
-There are many ways to test the services are running correctly, from a simple `make status` to see that everything claims to be up and running, to using the website and running `make logs` to see what went on in the background.
+There are many ways to test that the services are running correctly, from a simple `make status` to see that everything claims to be up and running, to using the website and running `make logs` to see what went on in the background. 
+
+To test a specific container, it can be good to open up a view of the logs with 
+```
+make logs s=<container_name>
+``` 
+in one terminal on the VM, and then interact with the website in a way that should activate the container. Most logs except `nginx` are quite sparse though, mostly containing some startup info, or any errors.

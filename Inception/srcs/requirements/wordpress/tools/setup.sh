@@ -15,9 +15,17 @@ if [ ! -f wp-config.php ]; then
 define('DB_NAME', '${MYSQL_DATABASE}');
 define('DB_USER', '${MYSQL_USER}');
 define('DB_PASSWORD', '${dbPass}');
+$
 define('DB_HOST', '${WP_DB_HOST}:${MYSQL_PORT}');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
+if (isset(\$_SERVER['HTTP_HOST'])) {
+    define( 'WP_HOME', 'https://' . \$_SERVER['HTTP_HOST'] );
+    define( 'WP_SITEURL', 'https://' . \$_SERVER['HTTP_HOST'] );
+} else {
+    define( 'WP_HOME', '${WP_URL}' );
+    define( 'WP_SITEURL', '${WP_URL}' );
+}
 define('AUTH_KEY',         '$(head -c 64 /dev/urandom | base64)');
 define('SECURE_AUTH_KEY',  '$(head -c 64 /dev/urandom | base64)');
 define('LOGGED_IN_KEY',    '$(head -c 64 /dev/urandom | base64)');
@@ -28,6 +36,7 @@ define('LOGGED_IN_SALT',   '$(head -c 64 /dev/urandom | base64)');
 define('NONCE_SALT',       '$(head -c 64 /dev/urandom | base64)');
 \$table_prefix = 'wp_';
 define('WP_DEBUG', ${WP_DEBUG});
+define('WP_DEBUG_LOG', '/dev/stderr');
 /* That's all, stop editing! Happy publishing. */
 if (!defined('ABSPATH')) define('ABSPATH', __DIR__ . '/');
 require_once(ABSPATH . 'wp-settings.php');
@@ -77,6 +86,9 @@ EOF
     su wpuser -s /bin/sh -c "php83 $installScript"
     rm $installScript
     echo "Done installing"
+else
+    echo "Found existing wordpress installation, syncing database port..."
+    sed -i "s|define('DB_HOST', '.*');|define('DB_HOST', '${WP_DB_HOST}:${MYSQL_PORT}');|" wp-config.php
 fi
 
 if command -v wp > /dev/null 2>&1; then
